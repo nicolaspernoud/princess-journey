@@ -1,0 +1,10 @@
+{
+  "configurations": [
+    {
+      "name": "princess_journey (Flutter)",
+      "program": "lib/main.dart",
+      "request": "launch",
+      "type": "dart"
+    }
+  ]
+}
