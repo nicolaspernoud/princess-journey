@@ -33,6 +33,11 @@ dependencies:
   path_provider: ^1.6.0
   intl: ^0.16.1
 
+  # Notifications
+  workmanager: ^0.2.3
+  # Use with FlutterLocalNotificationsPlugin class for local push notifications.
+  flutter_local_notifications: ^3.0.3
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

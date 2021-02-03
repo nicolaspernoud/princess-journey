@@ -84,6 +84,37 @@ class _AchievementsState extends State<Achievements> {
                           subtitle:
                               Text("You've managed to fast for four weeks..."),
                         )
+                      ]))),
+        if (user.weight > 0 && user.weight <= user.targetWeight)
+          Card(
+              color: Colors.pink[100],
+              child: Padding(
+                  padding: const EdgeInsets.all(10),
+                  child: Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: <Widget>[
+                        ListTile(
+                          leading: Icon(Icons.favorite),
+                          title: Text("Not an end, but a beginning"),
+                          subtitle: Text(
+                              "You've managed to attain your desired weight. It is not the end of your journey, but the beginning of your new life..."),
+                        )
+                      ]))),
+        if (user.weight > user.targetWeight &&
+            user.lesserWeight <= user.targetWeight)
+          Card(
+              color: Colors.pink[100],
+              child: Padding(
+                  padding: const EdgeInsets.all(10),
+                  child: Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: <Widget>[
+                        ListTile(
+                          leading: Icon(Icons.favorite_border),
+                          title: Text("Not a failure !"),
+                          subtitle: Text(
+                              "You've once managed to attain your target weight, keep up your efforts to stay below. Most beautiful journeys haves curvy paths..."),
+                        )
                       ])))
       ]);
     });

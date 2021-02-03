@@ -21,15 +21,25 @@ class User extends ChangeNotifier {
       writeUser();
     });
     if (hasTimer) {
-      timer = Timer.periodic(Duration(minutes: 1), (Timer t) {
+      startTimer();
+    }
+  }
+
+  startTimer() {
+    if (timer == null || !timer.isActive) {
+      timer = Timer.periodic(Duration(seconds: 5), (Timer t) {
         notifyListeners();
       });
     }
   }
 
+  stopTimer() {
+    timer.cancel();
+  }
+
   @override
   void dispose() {
-    timer ?? timer.cancel();
+    stopTimer();
     super.dispose();
   }
 
