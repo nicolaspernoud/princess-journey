@@ -158,7 +158,8 @@ void callbackDispatcher() {
     if (user.dailyFastingProgress == 1) {
       FlutterLocalNotificationsPlugin flip =
           new FlutterLocalNotificationsPlugin();
-      var android = new AndroidInitializationSettings('@mipmap/launcher_icon');
+      var android =
+          new AndroidInitializationSettings('@mipmap/notification_icon');
       var ios = new IOSInitializationSettings();
       var settings = new InitializationSettings(android: android, iOS: ios);
       flip.initialize(settings);
@@ -173,7 +174,7 @@ Future _showNotificationWithDefaultSound(
     flip, String title, String message) async {
   var androidPlatformChannelSpecifics = new AndroidNotificationDetails(
       'princess-journey-id', 'princess-journey', 'princess-journey-channel',
-      importance: Importance.max, priority: Priority.high);
+      importance: Importance.max, priority: Priority.high, color: Colors.pink);
   var iOSPlatformChannelSpecifics = new IOSNotificationDetails();
   var platformChannelSpecifics = new NotificationDetails(
       android: androidPlatformChannelSpecifics,

@@ -37,7 +37,7 @@ class _WeightChartState extends State<WeightChart> {
           width: double.infinity,
           height: widget.height,
           child: charts.TimeSeriesChart(data,
-              animate: true,
+              animate: false,
               dateTimeFactory: const charts.LocalDateTimeFactory(),
               defaultRenderer: new charts.LineRendererConfig(
                 includePoints: true,
