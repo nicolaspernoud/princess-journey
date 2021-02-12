@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:princess_journey/i18n.dart';
 import 'package:provider/provider.dart';
 
 import 'package:princess_journey/models/user.dart';
@@ -17,7 +18,12 @@ Future<void> main() async {
     // Build our app and trigger a frame
     await tester.pumpWidget(ChangeNotifierProvider.value(
       value: u,
-      child: MaterialApp(home: Scaffold(body: Princess())),
+      child: MaterialApp(
+        home: Scaffold(body: Princess()),
+        localizationsDelegates: [
+          const MyLocalizationsDelegate(),
+        ],
+      ),
     ));
 
     // Check that the fasting period icon exists

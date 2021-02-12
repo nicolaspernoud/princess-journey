@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:princess_journey/screens/journey.dart';
@@ -7,6 +9,8 @@ import 'screens/you.dart';
 import 'screens/home.dart';
 import 'models/user.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'i18n.dart';
 
 User u = User(hasTimer: true);
 
@@ -16,7 +20,8 @@ main() {
   Workmanager.registerPeriodicTask("1", "updateAndManageNotifications",
       frequency: Duration(minutes: 15),
       initialDelay: Duration(seconds: 5),
-      existingWorkPolicy: ExistingWorkPolicy.replace);
+      existingWorkPolicy: ExistingWorkPolicy.replace,
+      inputData: {'locale': Platform.localeName.split("_")[0]});
 
   u.readUser();
   //CDateTime.customTime = DateTime(2021, 01, 26, 17, 28);
@@ -39,6 +44,15 @@ class MyApp extends StatelessWidget {
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
       home: MainPage(title: "Princess Journey"),
+      localizationsDelegates: [
+        const MyLocalizationsDelegate(),
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+      ],
+      supportedLocales: [
+        const Locale('en', ''),
+        const Locale('fr', ''),
+      ],
     );
   }
 }
@@ -103,18 +117,18 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver {
           child: Padding(padding: const EdgeInsets.all(10), child: main)),
       bottomNavigationBar: BottomNavigationBar(
         type: BottomNavigationBarType.fixed,
-        items: const <BottomNavigationBarItem>[
+        items: <BottomNavigationBarItem>[
           BottomNavigationBarItem(
             icon: Icon(Icons.today),
-            label: 'Your day',
+            label: MyLocalizations.of(context).tr("your_day"),
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.explore),
-            label: 'Your journey',
+            label: MyLocalizations.of(context).tr("your_journey"),
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.person),
-            label: 'You',
+            label: MyLocalizations.of(context).tr("you"),
           ),
         ],
         currentIndex: _selectedIndex,
@@ -163,8 +177,12 @@ void callbackDispatcher() {
       var ios = new IOSInitializationSettings();
       var settings = new InitializationSettings(android: android, iOS: ios);
       flip.initialize(settings);
-      _showNotificationWithDefaultSound(flip, "Fasting completed !",
-          "Treat yourself with a nice balanced meal...");
+      _showNotificationWithDefaultSound(
+          flip,
+          MyLocalizations.localizedValue(
+              inputData["locale"], "fasting_completed"),
+          MyLocalizations.localizedValue(
+              inputData["locale"], "treat_yourself"));
     }
     return Future.value(true);
   });

@@ -38,6 +38,9 @@ dependencies:
   # Use with FlutterLocalNotificationsPlugin class for local push notifications.
   flutter_local_notifications: ^3.0.3
 
+  flutter_localizations:
+    sdk: flutter
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

@@ -3,6 +3,8 @@ import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:princess_journey/models/user.dart';
 
+import '../i18n.dart';
+
 class You extends StatefulWidget {
   @override
   _YouState createState() => _YouState();
@@ -21,13 +23,14 @@ class _YouState extends State<You> {
                 builder: (context, user, child) => ListView(children: <Widget>[
                       ListTile(
                           leading: Icon(Icons.person),
-                          title: Text("Tell us about you...")),
+                          title:
+                              Text(MyLocalizations.of(context).tr("tell_us"))),
                       Column(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          Text("Your gender"),
+                          Text(MyLocalizations.of(context).tr("your_gender")),
                           RadioListTile(
-                            title: const Text('Male'),
+                            title: Text(MyLocalizations.of(context).tr("male")),
                             value: Gender.male,
                             groupValue: user.gender,
                             onChanged: (Gender value) {
@@ -35,7 +38,8 @@ class _YouState extends State<You> {
                             },
                           ),
                           RadioListTile(
-                            title: const Text('Female'),
+                            title:
+                                Text(MyLocalizations.of(context).tr("female")),
                             value: Gender.female,
                             groupValue: user.gender,
                             onChanged: (Gender value) {
@@ -48,8 +52,9 @@ class _YouState extends State<You> {
                       ),
                       TextFormField(
                         initialValue: "${user.height != 0 ? user.height : ""}",
-                        decoration:
-                            new InputDecoration(labelText: "Your height (cm)"),
+                        decoration: new InputDecoration(
+                            labelText:
+                                MyLocalizations.of(context).tr("your_height")),
                         keyboardType: TextInputType.number,
                         inputFormatters: <TextInputFormatter>[
                           FilteringTextInputFormatter.allow(intOnly)
@@ -60,8 +65,9 @@ class _YouState extends State<You> {
                       ),
                       TextFormField(
                         initialValue: "${user.weight != 0 ? user.weight : ""}",
-                        decoration:
-                            new InputDecoration(labelText: "Your weight (kg)"),
+                        decoration: new InputDecoration(
+                            labelText: MyLocalizations.of(context)
+                                .tr("your_weight_kg")),
                         keyboardType: TextInputType.number,
                         inputFormatters: <TextInputFormatter>[
                           FilteringTextInputFormatter.allow(doubleOnly)
@@ -74,7 +80,8 @@ class _YouState extends State<You> {
                         initialValue:
                             "${user.targetWeight != 0 ? user.targetWeight : ""}",
                         decoration: new InputDecoration(
-                            labelText: "Your desired weight (kg)"),
+                            labelText: MyLocalizations.of(context)
+                                .tr("your_desired_weight")),
                         keyboardType: TextInputType.number,
                         inputFormatters: <TextInputFormatter>[
                           FilteringTextInputFormatter.allow(doubleOnly)
@@ -85,7 +92,8 @@ class _YouState extends State<You> {
                       ),
                       Row(
                         children: [
-                          Text("Your daily water intake goal : "),
+                          Text(MyLocalizations.of(context)
+                              .tr("your_daily_water_goal")),
                           DropdownButton<int>(
                             value: user.dailyWaterTarget.toInt(),
                             items:

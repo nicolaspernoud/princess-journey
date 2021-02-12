@@ -5,6 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:princess_journey/models/user.dart';
 
+import '../i18n.dart';
+
 class WeightChart extends StatefulWidget {
   WeightChart({Key key, this.height}) : super(key: key);
   final double height;
@@ -46,12 +48,16 @@ class _WeightChartState extends State<WeightChart> {
               primaryMeasureAxis: new charts.NumericAxisSpec(
                   tickProviderSpec:
                       new charts.StaticNumericTickProviderSpec(staticTicks)),
+              domainAxis: new charts.DateTimeAxisSpec(
+                  tickFormatterSpec: new charts.AutoDateTimeTickFormatterSpec(
+                      day: new charts.TimeFormatterSpec(
+                          format: 'd', transitionFormat: 'yyyy-MM-dd'))),
               behaviors: [
                 new charts.RangeAnnotation([
                   new charts.LineAnnotationSegment(
                     user.targetWeight,
                     charts.RangeAnnotationAxisType.measure,
-                    startLabel: 'The begining of your new life...',
+                    startLabel: MyLocalizations.of(context).tr("the_begining"),
                     color: charts.MaterialPalette.gray.shade400,
                     dashPattern: [5, 5],
                   ),

@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:princess_journey/models/user.dart';
 
+import '../i18n.dart';
+
 class Achievements extends StatefulWidget {
   @override
   _AchievementsState createState() => _AchievementsState();
@@ -20,10 +22,11 @@ class _AchievementsState extends State<Achievements> {
                     children: <Widget>[
                       ListTile(
                           leading: Icon(Icons.explore),
-                          title: Text("Your journey so far..."),
-                          subtitle: Text(
-                              "Fasting for ${user.daysOfFasting} consecutives days.\n"
-                              "Longest ever fasting is ${user.maxDaysOfFasting} consecutives days."))
+                          title: Text(
+                              MyLocalizations.of(context).tr("journey_so_far")),
+                          subtitle: Text(MyLocalizations.of(context)
+                              .journeySoFarDetails(
+                                  user.daysOfFasting, user.maxDaysOfFasting)))
                     ]))),
         if (user.maxDaysOfFasting >= 1)
           Card(
@@ -35,9 +38,10 @@ class _AchievementsState extends State<Achievements> {
                       children: <Widget>[
                         ListTile(
                           leading: Icon(Icons.spa),
-                          title: Text("The butterfly princess"),
-                          subtitle:
-                              Text("You've managed to fast for one day..."),
+                          title: Text(MyLocalizations.of(context)
+                              .tr("butterfly_princess")),
+                          subtitle: Text(MyLocalizations.of(context)
+                              .tr("butterfly_princess_details")),
                         )
                       ]))),
         if (user.maxDaysOfFasting >= 3)
@@ -50,9 +54,10 @@ class _AchievementsState extends State<Achievements> {
                       children: <Widget>[
                         ListTile(
                           leading: Icon(Icons.weekend),
-                          title: Text("The princess of nothing"),
-                          subtitle: Text(
-                              "You've managed to fast for 3 consecutives days..."),
+                          title: Text(MyLocalizations.of(context)
+                              .tr("princess_of_nothing")),
+                          subtitle: Text(MyLocalizations.of(context)
+                              .tr("princess_of_nothing_details")),
                         )
                       ]))),
         if (user.maxDaysOfFasting >= 14)
@@ -65,9 +70,10 @@ class _AchievementsState extends State<Achievements> {
                       children: <Widget>[
                         ListTile(
                           leading: Icon(Icons.house_siding),
-                          title: Text("The princess of the palace"),
-                          subtitle:
-                              Text("You've managed to fast for two weeks..."),
+                          title: Text(MyLocalizations.of(context)
+                              .tr("princess_of_the_palace")),
+                          subtitle: Text(MyLocalizations.of(context)
+                              .tr("princess_of_the_palace_details")),
                         )
                       ]))),
         if (user.maxDaysOfFasting >= 28)
@@ -80,9 +86,10 @@ class _AchievementsState extends State<Achievements> {
                       children: <Widget>[
                         ListTile(
                           leading: Icon(Icons.alt_route),
-                          title: Text("The princess of the path"),
-                          subtitle:
-                              Text("You've managed to fast for four weeks..."),
+                          title: Text(MyLocalizations.of(context)
+                              .tr("princess_of_the_path")),
+                          subtitle: Text(MyLocalizations.of(context)
+                              .tr("princess_of_the_path_details")),
                         )
                       ]))),
         if (user.weight > 0 && user.weight <= user.targetWeight)
@@ -95,9 +102,10 @@ class _AchievementsState extends State<Achievements> {
                       children: <Widget>[
                         ListTile(
                           leading: Icon(Icons.favorite),
-                          title: Text("Not an end, but a beginning"),
-                          subtitle: Text(
-                              "You've managed to attain your desired weight. It is not the end of your journey, but the beginning of your new life..."),
+                          title: Text(
+                              MyLocalizations.of(context).tr("not_an_end")),
+                          subtitle: Text(MyLocalizations.of(context)
+                              .tr("not_an_end_details")),
                         )
                       ]))),
         if (user.weight > user.targetWeight &&
@@ -111,9 +119,10 @@ class _AchievementsState extends State<Achievements> {
                       children: <Widget>[
                         ListTile(
                           leading: Icon(Icons.favorite_border),
-                          title: Text("Not a failure !"),
-                          subtitle: Text(
-                              "You've once managed to attain your target weight, keep up your efforts to stay below. Most beautiful journeys haves curvy paths..."),
+                          title: Text(
+                              MyLocalizations.of(context).tr("not_a_failure")),
+                          subtitle: Text(MyLocalizations.of(context)
+                              .tr("not_a_failure_details")),
                         )
                       ])))
       ]);

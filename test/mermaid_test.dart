@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:princess_journey/i18n.dart';
 import 'package:provider/provider.dart';
 
 import 'package:princess_journey/models/user.dart';
@@ -16,7 +17,12 @@ Future<void> main() async {
     // Build our app and trigger a frame
     await tester.pumpWidget(ChangeNotifierProvider.value(
       value: u,
-      child: MaterialApp(home: Scaffold(body: Mermaid())),
+      child: MaterialApp(
+        home: Scaffold(body: Mermaid()),
+        localizationsDelegates: [
+          const MyLocalizationsDelegate(),
+        ],
+      ),
     ));
 
     // Check that the mermaid CircularProgressIndicator shows 0 if there is no water intake for today

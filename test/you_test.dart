@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:princess_journey/i18n.dart';
 import 'package:provider/provider.dart';
 
 import 'package:princess_journey/models/user.dart';
@@ -12,11 +13,16 @@ Future<void> main() async {
   // Create a new user
   User u = User(
       gender: Gender.female, height: 160, weight: 60.0, targetWeight: 55.0);
-  testWidgets('Me tests', (WidgetTester tester) async {
+  testWidgets('You tests', (WidgetTester tester) async {
     // Build our app and trigger a frame
     await tester.pumpWidget(ChangeNotifierProvider.value(
       value: u,
-      child: MaterialApp(home: Scaffold(body: You())),
+      child: MaterialApp(
+        home: Scaffold(body: You()),
+        localizationsDelegates: [
+          const MyLocalizationsDelegate(),
+        ],
+      ),
     ));
 
     // Check that the male radio button is not checked

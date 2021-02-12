@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:princess_journey/models/user.dart';
-import 'package:intl/intl.dart';
+
+import '../i18n.dart';
 
 class Princess extends StatefulWidget {
   @override
@@ -61,7 +62,7 @@ class _PrincessState extends State<Princess> {
           builder: (BuildContext context) {
             return StatefulBuilder(builder: (context, setState) {
               return AlertDialog(
-                title: Text('Select the fasting duration'),
+                title: Text(MyLocalizations.of(context).tr("select_duration")),
                 content: Column(mainAxisSize: MainAxisSize.min, children: [
                   Slider(
                     value: _duration,
@@ -82,7 +83,7 @@ class _PrincessState extends State<Princess> {
                 ]),
                 actions: <Widget>[
                   TextButton(
-                    child: Text('CANCEL'),
+                    child: Text(MyLocalizations.of(context).tr("cancel")),
                     onPressed: () {
                       _duration = startValue;
                       Navigator.of(context).pop();
@@ -102,7 +103,6 @@ class _PrincessState extends State<Princess> {
     }
 
     return Consumer<User>(builder: (context, user, child) {
-      var df = new DateFormat("yyyy-MM-dd HH:mm");
       return Card(
           child: Padding(
         padding: const EdgeInsets.all(10),
@@ -112,20 +112,18 @@ class _PrincessState extends State<Princess> {
             if (user.activeFastingPeriod != null)
               ListTile(
                 leading: Icon(Icons.no_meals),
-                title: Text(
-                    "Fasting ${user?.activeFastingPeriod?.duration ?? ""} hours..."),
-                subtitle: Text(
-                    'From ${df.format(user.activeFastingPeriod?.start) ?? ""}\nUntil ${df.format(user?.activeFastingPeriod?.end) ?? ""}'),
+                title: Text(MyLocalizations.of(context).fastingHours(user)),
+                subtitle:
+                    Text(MyLocalizations.of(context).fastingHoursDetails(user)),
               ),
             if (user.activeFastingPeriod == null)
               ListTile(
                 leading: Icon(Icons.restaurant),
-                title: Text("Taking a break from the fasting..."),
+                title: Text(MyLocalizations.of(context).tr("taking_break")),
                 subtitle: user.fastingPeriods.isNotEmpty
-                    ? Text(
-                        'Your next fasting period should start at ${df.format(user.fastingPeriods.last.start.add(Duration(days: 1)))}')
-                    : Text(
-                        'Create a fasting period by tapping the button below'),
+                    ? Text(MyLocalizations.of(context).nextFastingPeriod(user))
+                    : Text(MyLocalizations.of(context)
+                        .tr("create_fasting_period")),
               ),
             Padding(
               padding: const EdgeInsets.all(10),
@@ -155,7 +153,7 @@ class _PrincessState extends State<Princess> {
                           await _selectDuration(user);
                         },
                       ),
-                      Text("Create"),
+                      Text(MyLocalizations.of(context).tr("create")),
                     ],
                   )
                 else ...[
@@ -168,7 +166,7 @@ class _PrincessState extends State<Princess> {
                           await _selectDuration(user);
                         },
                       ),
-                      Text("Edit"),
+                      Text(MyLocalizations.of(context).tr("edit")),
                     ],
                   ),
                   if (user.activeFastingPeriod.ended)
@@ -181,7 +179,7 @@ class _PrincessState extends State<Princess> {
                             user.closeActiveFastingPeriod();
                           },
                         ),
-                        Text("Success"),
+                        Text(MyLocalizations.of(context).tr("success")),
                       ],
                     ),
                   Column(
@@ -193,7 +191,7 @@ class _PrincessState extends State<Princess> {
                           user.failActiveFastingPeriod();
                         },
                       ),
-                      Text("Failure"),
+                      Text(MyLocalizations.of(context).tr("failure")),
                     ],
                   ),
                 ]

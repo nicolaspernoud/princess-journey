@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:princess_journey/models/user.dart';
 
+import '../i18n.dart';
+
 class Mermaid extends StatefulWidget {
   @override
   _MermaidState createState() => _MermaidState();
@@ -17,7 +19,7 @@ class _MermaidState extends State<Mermaid> {
         children: [
           ListTile(
             leading: Icon(Icons.local_drink),
-            title: Text("What did you drink today ?"),
+            title: Text(MyLocalizations.of(context).tr("what_did_you_drink")),
           ),
           Padding(
               padding: const EdgeInsets.all(10),
@@ -57,7 +59,7 @@ class _DrinksState extends State<Drinks> {
           builder: (BuildContext context) {
             return StatefulBuilder(builder: (context, setState) {
               return AlertDialog(
-                title: Text('Custom intake'),
+                title: Text(MyLocalizations.of(context).tr("custom_intake")),
                 content: Column(mainAxisSize: MainAxisSize.min, children: [
                   Slider(
                     value: _customIntake,
@@ -136,7 +138,7 @@ class _DrinksState extends State<Drinks> {
                         user.addWaterIntake(_customIntake);
                       },
                     ),
-                    Text('custom intake')
+                    Text(MyLocalizations.of(context).tr("custom_intake"))
                   ],
                 ),
               ],

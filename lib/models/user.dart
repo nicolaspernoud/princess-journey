@@ -26,6 +26,7 @@ class User extends ChangeNotifier {
   }
 
   startTimer() {
+    notifyListeners();
     if (timer == null || !timer.isActive) {
       timer = Timer.periodic(Duration(seconds: 5), (Timer t) {
         notifyListeners();
