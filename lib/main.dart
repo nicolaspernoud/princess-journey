@@ -67,34 +67,33 @@ class MainPage extends StatefulWidget {
 class _MainPageState extends State<MainPage> with WidgetsBindingObserver {
   int _selectedIndex = 0;
 
+  PageController _pageController;
+
+  @override
+  void initState() {
+    super.initState();
+    _pageController = PageController();
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void dispose() {
+    _pageController.dispose();
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
+      _pageController.animateToPage(index,
+          duration: Duration(milliseconds: 250), curve: Curves.easeOut);
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    var main = (int id) {
-      switch (id) {
-        case 0:
-          {
-            return Home();
-          }
-          break;
-        case 1:
-          {
-            return Journey();
-          }
-          break;
-        default:
-          {
-            return You();
-          }
-          break;
-      }
-    }(_selectedIndex);
-    var scaffold = Scaffold(
+    return Scaffold(
       appBar: AppBar(
           //title: Text(widget.title, style: TextStyle(color: Colors.pinkAccent)),
           title: Row(
@@ -113,8 +112,19 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver {
           ),
           backgroundColor: Colors.white,
           shadowColor: Colors.pink),
-      body: Center(
-          child: Padding(padding: const EdgeInsets.all(10), child: main)),
+      body: Padding(
+          padding: const EdgeInsets.all(10),
+          child: PageView(
+            controller: _pageController,
+            onPageChanged: (index) {
+              setState(() => _selectedIndex = index);
+            },
+            children: <Widget>[
+              Home(),
+              Journey(),
+              You(),
+            ],
+          )),
       bottomNavigationBar: BottomNavigationBar(
         type: BottomNavigationBarType.fixed,
         items: <BottomNavigationBarItem>[
@@ -136,7 +146,6 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver {
         onTap: _onItemTapped,
       ),
     );
-    return scaffold;
   }
 
   @override
@@ -148,18 +157,6 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver {
       default:
         u.startTimer();
     }
-  }
-
-  @override
-  initState() {
-    super.initState();
-    WidgetsBinding.instance.addObserver(this);
-  }
-
-  @override
-  void dispose() {
-    WidgetsBinding.instance.removeObserver(this);
-    super.dispose();
   }
 }
 

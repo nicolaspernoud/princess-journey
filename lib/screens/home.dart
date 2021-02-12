@@ -10,8 +10,6 @@ class Home extends StatefulWidget {
 class _HomeState extends State<Home> {
   @override
   Widget build(BuildContext context) {
-    return Padding(
-        padding: const EdgeInsets.all(20),
-        child: ListView(children: [Princess(), Mermaid()]));
+    return ListView(children: [Princess(), Mermaid()]);
   }
 }
