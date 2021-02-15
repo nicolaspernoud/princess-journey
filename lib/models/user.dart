@@ -17,12 +17,14 @@ class User extends ChangeNotifier {
     weight ??= 0.0;
     _weights.add(Measurement(_today(), weight));
     _targetWeight = targetWeight ?? 0.0;
-    this.addListener(() {
-      writeUser();
-    });
     if (hasTimer) {
       startTimer();
     }
+  }
+  
+  notifyAndPersist() {
+    notifyListeners();
+    writeUser();
   }
 
   startTimer() {
@@ -49,7 +51,7 @@ class User extends ChangeNotifier {
 
   set gender(Gender g) {
     _gender = g;
-    notifyListeners();
+    notifyAndPersist();
   }
 
   Gender get gender => _gender;
@@ -59,7 +61,7 @@ class User extends ChangeNotifier {
 
   set height(int h) {
     _height = h;
-    notifyListeners();
+    notifyAndPersist();
   }
 
   int get height => _height;
@@ -80,7 +82,7 @@ class User extends ChangeNotifier {
     } else {
       _weights.add(Measurement(_today(), v));
     }
-    notifyListeners();
+    notifyAndPersist();
   }
 
   double get weight {
@@ -127,7 +129,7 @@ class User extends ChangeNotifier {
 
   set targetWeight(double v) {
     _targetWeight = v;
-    notifyListeners();
+    notifyAndPersist();
   }
 
   double get targetWeight => _targetWeight;
@@ -141,7 +143,7 @@ class User extends ChangeNotifier {
     } else {
       _waterIntakes.add(Measurement(_today(), w));
     }
-    notifyListeners();
+    notifyAndPersist();
   }
 
   double get waterIntake {
@@ -161,7 +163,7 @@ class User extends ChangeNotifier {
 
   set dailyWaterTarget(double v) {
     _dailyWaterTarget = v;
-    notifyListeners();
+    notifyAndPersist();
   }
 
   double get waterTargetCompletion {
@@ -190,7 +192,7 @@ class User extends ChangeNotifier {
       start = start ?? CDateTime.now();
       _fastingPeriods.add(FastingPeriod(duration: v, start: start));
     }
-    notifyListeners();
+    notifyAndPersist();
   }
 
   // The active fasting period is the most recent fasting period that is not closed
@@ -204,7 +206,7 @@ class User extends ChangeNotifier {
   closeActiveFastingPeriod() {
     if (activeFastingPeriod != null) {
       activeFastingPeriod.close();
-      notifyListeners();
+      notifyAndPersist();
     }
   }
 
@@ -213,7 +215,7 @@ class User extends ChangeNotifier {
     if (activeFastingPeriod != null) {
       _fastingPeriods.removeLast();
     }
-    notifyListeners();
+    notifyAndPersist();
   }
 
   List<FastingPeriod> get fastingPeriods => _fastingPeriods;

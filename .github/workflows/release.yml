@@ -1,0 +1,40 @@
+on:
+  push:
+    branches:
+      - main
+
+name: Build and Release Apps
+jobs:
+  build:
+    name: Build Apps
+    runs-on: ubuntu-latest
+    steps:
+      - name: Export Release Timestamp
+        run: echo "APP_VERSION=$(date +'%Y-%m-%d_%H-%m-%S')" >> $GITHUB_ENV
+      - name: Checkout repository
+        uses: actions/checkout@v1
+      - name: Set up Java
+        uses: actions/setup-java@v1
+        with:
+          java-version: "12.x"
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v1
+        with:
+          channel: "stable"
+      - name: Decode android/key.jks
+        run: echo "${{ secrets.KEY_JKS_PROD }}" | base64 --decode > android/key.jks
+      - name: Decode android/key.properties
+        run: echo "${{ secrets.KEY_PROPERTIES_PROD }}" | base64 --decode > android/key.properties
+      - name: Install pub Dependencies
+        run: flutter pub get
+      - name: Run Tests
+        run: flutter test
+      - name: Build Android App
+        run: flutter build apk --split-per-abi
+      - name: Release Apps
+        uses: ncipollo/release-action@v1
+        with:
+          tag: ${{ env.APP_VERSION }}
+          name: ${{ env.APP_VERSION }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+          artifacts: "build/app/outputs/apk/release/*.apk"

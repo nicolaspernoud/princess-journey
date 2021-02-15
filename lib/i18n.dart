@@ -60,7 +60,7 @@ class MyLocalizations {
       "male": "Male",
       "female": "Female",
       "your_height": "Your height (cm)",
-      "your_weight_kg": "Your weight (km)",
+      "your_weight_kg": "Your weight (kg)",
       "your_desired_weight": "Your desired weight (kg)",
       "your_daily_water_goal": "Your daily water intake goal (mL): "
     },
@@ -108,19 +108,19 @@ class MyLocalizations {
       "male": "Homme",
       "female": "Femme",
       "your_height": "Votre taille (cm)",
-      "your_weight_kg": "Votre poids (km)",
+      "your_weight_kg": "Votre poids (kg)",
       "your_desired_weight": "Votre poids souhaité (kg)",
       "your_daily_water_goal": "Votre apport en eau quotidien (mL) : "
     },
   };
 
   String tr(String token) {
-    return _localizedValues[locale.languageCode][token];
+    return _localizedValues[locale.languageCode][token] ?? token;
   }
 
   static String localizedValue(String locale, String token) {
     final lcl = ['en', 'fr'].contains(locale) ? locale : 'en';
-    return _localizedValues[lcl][token];
+    return _localizedValues[lcl][token] ?? token;
   }
 
   String journeySoFarDetails(int days, int maxDays) {
