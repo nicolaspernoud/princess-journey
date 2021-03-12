@@ -60,7 +60,10 @@ class _YouState extends State<You> {
                           FilteringTextInputFormatter.allow(intOnly)
                         ],
                         onChanged: (text) {
-                          user.height = int.parse(text);
+                          var value = int.tryParse(text);
+                          if (value != null) {
+                            user.height = value;
+                          }
                         },
                       ),
                       TextFormField(
@@ -73,7 +76,10 @@ class _YouState extends State<You> {
                           FilteringTextInputFormatter.allow(doubleOnly)
                         ],
                         onChanged: (text) {
-                          user.weight = double.parse(text);
+                          var value = double.tryParse(text);
+                          if (value != null) {
+                            user.weight = value;
+                          }
                         },
                       ),
                       TextFormField(
@@ -87,7 +93,10 @@ class _YouState extends State<You> {
                           FilteringTextInputFormatter.allow(doubleOnly)
                         ],
                         onChanged: (text) {
-                          user.targetWeight = double.parse(text);
+                          var value = double.tryParse(text);
+                          if (value != null) {
+                            user.targetWeight = value;
+                          }
                         },
                       ),
                       Row(
