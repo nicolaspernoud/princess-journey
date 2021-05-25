@@ -16,8 +16,8 @@ User u = User(hasTimer: true);
 
 main() {
   WidgetsFlutterBinding.ensureInitialized();
-  Workmanager.initialize(callbackDispatcher, isInDebugMode: false);
-  Workmanager.registerPeriodicTask("1", "updateAndManageNotifications",
+  Workmanager().initialize(callbackDispatcher, isInDebugMode: false);
+  Workmanager().registerPeriodicTask("1", "updateAndManageNotifications",
       frequency: Duration(minutes: 15),
       initialDelay: Duration(seconds: 5),
       existingWorkPolicy: ExistingWorkPolicy.replace,
@@ -161,7 +161,7 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver {
 }
 
 void callbackDispatcher() {
-  Workmanager.executeTask((task, inputData) async {
+  Workmanager().executeTask((task, inputData) async {
     // Update views
     User user = User();
     await user.read();

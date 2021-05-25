@@ -145,7 +145,7 @@ class MyLocalizations {
       return "Depuis ${df.format(user.activeFastingPeriod?.start) ?? ""}\nJusqu'à ${df.format(user?.activeFastingPeriod?.end) ?? ""}";
     }
     final df = new DateFormat("yyyy-MM-dd HH:mm");
-    return "'From ${df.format(user.activeFastingPeriod?.start) ?? ""}\nUntil ${df.format(user?.activeFastingPeriod?.end) ?? ""}'";
+    return "From ${df.format(user.activeFastingPeriod?.start) ?? ""}\nUntil ${df.format(user?.activeFastingPeriod?.end) ?? ""}";
   }
 
   String nextFastingPeriod(User user) {
