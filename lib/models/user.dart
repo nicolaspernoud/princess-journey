@@ -7,7 +7,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
 
-class User extends ChangeNotifier {
+class User extends ChangeNotifier with LocalFilePersister {
   // Periodic timer to update suscribers as time changes
   Timer timer;
   User({filename, gender, height, weight, targetWeight, hasTimer: false}) {
@@ -21,10 +21,15 @@ class User extends ChangeNotifier {
       startTimer();
     }
   }
-  
+
   notifyAndPersist() {
     notifyListeners();
-    writeUser();
+    write();
+  }
+
+  read() async {
+    await super.read();
+    notifyListeners();
   }
 
   startTimer() {
@@ -73,7 +78,7 @@ class User extends ChangeNotifier {
   }
 
   // Weight
-  var _weights = List<Measurement>();
+  var _weights = <Measurement>[];
 
   set weight(v) {
     if (v == 0) return;
@@ -135,7 +140,7 @@ class User extends ChangeNotifier {
   double get targetWeight => _targetWeight;
 
   // Water intake
-  var _waterIntakes = List<Measurement>();
+  var _waterIntakes = <Measurement>[];
 
   addWaterIntake(double w) {
     if (_waterIntakes.isNotEmpty && _waterIntakes.last.date == _today()) {
@@ -178,7 +183,7 @@ class User extends ChangeNotifier {
   }
 
   // Fasting
-  var _fastingPeriods = List<FastingPeriod>();
+  var _fastingPeriods = <FastingPeriod>[];
 
   setFastingPeriod(int v, [DateTime start]) {
     if (activeFastingPeriod != null) {
@@ -256,7 +261,11 @@ class User extends ChangeNotifier {
   }
 
   int get daysOfFasting {
-    int v = (_fastingPeriods.isNotEmpty && _fastingPeriods.last.closed) ? 1 : 0;
+    if (_fastingPeriods.isEmpty ||
+        CDateTime.now().difference(_fastingPeriods.last.start).inHours > 24) {
+      return 0;
+    }
+    int v = (_fastingPeriods.last.closed) ? 1 : 0;
     for (var i = _fastingPeriods.length - 1; i > 0; i--) {
       if (_fastingPeriods[i]
               .start
@@ -287,35 +296,6 @@ class User extends ChangeNotifier {
       }
     }
     return v;
-  }
-
-  // Persistence
-  String _fileName = "princess.json";
-
-  Future<File> get localFile async {
-    if (Platform.isAndroid) {
-      final directory = await getExternalStorageDirectory();
-      await new Directory('${directory.path}').create(recursive: true);
-      return File('${directory.path}/$_fileName');
-    }
-    final directory = await getApplicationDocumentsDirectory();
-    return File('${directory.path}/$_fileName');
-  }
-
-  readUser() async {
-    try {
-      final file = await localFile;
-      String contents = await file.readAsString();
-      fromJson(contents);
-      notifyListeners();
-    } catch (e) {
-      print("user could not be loaded from file, defaulting to new user");
-    }
-  }
-
-  void writeUser() async {
-    final file = await localFile;
-    await file.writeAsString(toJson());
   }
 
   fromJson(String source) {
@@ -423,4 +403,37 @@ class FastingPeriod {
 class FastingPeriodNotEndedException implements Exception {
   String cause;
   FastingPeriodNotEndedException(this.cause);
+}
+
+abstract class LocalFilePersister {
+  fromJson(String source);
+  toJson();
+
+  // Persistence
+  String _fileName = "princess.json";
+
+  Future<File> get localFile async {
+    if (Platform.isAndroid) {
+      final directory = await getExternalStorageDirectory();
+      await new Directory('${directory.path}').create(recursive: true);
+      return File('${directory.path}/$_fileName');
+    }
+    final directory = await getApplicationDocumentsDirectory();
+    return File('${directory.path}/$_fileName');
+  }
+
+  read() async {
+    try {
+      final file = await localFile;
+      String contents = await file.readAsString();
+      fromJson(contents);
+    } catch (e) {
+      print("data could not be loaded from file, defaulting to new data");
+    }
+  }
+
+  void write() async {
+    final file = await localFile;
+    file.writeAsString(toJson());
+  }
 }

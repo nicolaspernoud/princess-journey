@@ -23,7 +23,7 @@ main() {
       existingWorkPolicy: ExistingWorkPolicy.replace,
       inputData: {'locale': Platform.localeName.split("_")[0]});
 
-  u.readUser();
+  u.read();
   //CDateTime.customTime = DateTime(2021, 01, 26, 17, 28);
   runApp(
     ChangeNotifierProvider.value(
@@ -164,7 +164,7 @@ void callbackDispatcher() {
   Workmanager.executeTask((task, inputData) async {
     // Update views
     User user = User();
-    await user.readUser();
+    await user.read();
     // Send notification when fasting period completed
     if (user.dailyFastingProgress == 1) {
       FlutterLocalNotificationsPlugin flip =

@@ -124,10 +124,13 @@ void main() {
       CDateTime.customTime = start.add(Duration(days: 2));
       u.closeActiveFastingPeriod();
       u.setFastingPeriod(10);
+      expect(u.daysOfFasting, 2);
       // Wait for TWO days, close the fasting period, and create another one
       CDateTime.customTime = start.add(Duration(days: 4));
       u.closeActiveFastingPeriod();
+      expect(u.daysOfFasting, 0);
       u.setFastingPeriod(10);
+      expect(u.daysOfFasting, 0);
       // Wait a day, close the fasting period, and create another one
       CDateTime.customTime = start.add(Duration(days: 5));
       u.closeActiveFastingPeriod();
@@ -155,7 +158,7 @@ void main() {
       user.targetWeight = 50.0;
       user.setFastingPeriod(10, CDateTime.now());
       user.addWaterIntake(100.0);
-      await user.readUser();
+      await user.read();
     }, [
       (User user) => user.gender,
       (User user) => user.height,
@@ -200,7 +203,7 @@ void main() {
       user1.setFastingPeriod(12, CDateTime.now());
       // Create another user from json
       final User user2 = User(filename: "data_persistence_princess.json");
-      await user2.readUser();
+      await user2.read();
       //print(user2.toJson());
       // Check that both users are equals
       expectPersistence(user2);
