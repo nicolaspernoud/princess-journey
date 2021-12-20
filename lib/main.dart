@@ -8,7 +8,6 @@ import 'package:workmanager/workmanager.dart';
 import 'screens/you.dart';
 import 'screens/home.dart';
 import 'models/user.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'i18n.dart';
 
@@ -188,8 +187,11 @@ void callbackDispatcher() {
 Future _showNotificationWithDefaultSound(
     flip, String title, String message) async {
   var androidPlatformChannelSpecifics = new AndroidNotificationDetails(
-      'princess-journey-id', 'princess-journey', 'princess-journey-channel',
-      importance: Importance.max, priority: Priority.high, color: Colors.pink);
+      'princess-journey-id', 'princess-journey',
+      channelDescription: 'princess-journey-channel',
+      importance: Importance.max,
+      priority: Priority.high,
+      color: Colors.pink);
   var iOSPlatformChannelSpecifics = new IOSNotificationDetails();
   var platformChannelSpecifics = new NotificationDetails(
       android: androidPlatformChannelSpecifics,
