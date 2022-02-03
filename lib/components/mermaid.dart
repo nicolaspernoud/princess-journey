@@ -5,6 +5,8 @@ import 'package:princess_journey/models/user.dart';
 import '../i18n.dart';
 
 class Mermaid extends StatefulWidget {
+  const Mermaid({Key? key}) : super(key: key);
+
   @override
   _MermaidState createState() => _MermaidState();
 }
@@ -18,8 +20,8 @@ class _MermaidState extends State<Mermaid> {
       child: Column(
         children: [
           ListTile(
-            leading: Icon(Icons.local_drink),
-            title: Text(MyLocalizations.of(context).tr("what_did_you_drink")),
+            leading: const Icon(Icons.local_drink),
+            title: Text(MyLocalizations.of(context)!.tr("what_did_you_drink")),
           ),
           Padding(
               padding: const EdgeInsets.all(10),
@@ -32,11 +34,11 @@ class _MermaidState extends State<Mermaid> {
                             semanticsLabel: "mermaid daily progress",
                             strokeWidth: 10,
                             backgroundColor: Colors.blueGrey,
-                            valueColor:
-                                new AlwaysStoppedAnimation<Color>(Colors.blue),
+                            valueColor: const AlwaysStoppedAnimation<Color>(
+                                Colors.blue),
                             value: user.waterTargetCompletion,
                           )))),
-          Drinks()
+          const Drinks()
         ],
       ),
     ));
@@ -44,6 +46,8 @@ class _MermaidState extends State<Mermaid> {
 }
 
 class Drinks extends StatefulWidget {
+  const Drinks({Key? key}) : super(key: key);
+
   @override
   _DrinksState createState() => _DrinksState();
 }
@@ -59,7 +63,7 @@ class _DrinksState extends State<Drinks> {
           builder: (BuildContext context) {
             return StatefulBuilder(builder: (context, setState) {
               return AlertDialog(
-                title: Text(MyLocalizations.of(context).tr("custom_intake")),
+                title: Text(MyLocalizations.of(context)!.tr("custom_intake")),
                 content: Column(mainAxisSize: MainAxisSize.min, children: [
                   Slider(
                     value: _customIntake,
@@ -77,7 +81,7 @@ class _DrinksState extends State<Drinks> {
                 ]),
                 actions: <Widget>[
                   TextButton(
-                    child: Text('OK'),
+                    child: const Text('OK'),
                     onPressed: () {
                       Navigator.of(context).pop();
                     },
@@ -96,49 +100,49 @@ class _DrinksState extends State<Drinks> {
                   mainAxisSize: MainAxisSize.min,
                   children: <Widget>[
                     IconButton(
-                      icon: Icon(Icons.local_bar),
+                      icon: const Icon(Icons.local_bar),
                       onPressed: () {
                         user.addWaterIntake(120);
                       },
                     ),
-                    Text('120 mL')
+                    const Text('120 mL')
                   ],
                 ),
                 Column(
                   mainAxisSize: MainAxisSize.min,
                   children: <Widget>[
                     IconButton(
-                      icon: Icon(Icons.local_cafe),
+                      icon: const Icon(Icons.local_cafe),
                       onPressed: () {
                         user.addWaterIntake(250);
                       },
                     ),
-                    Text('250 mL')
+                    const Text('250 mL')
                   ],
                 ),
                 Column(
                   mainAxisSize: MainAxisSize.min,
                   children: <Widget>[
                     IconButton(
-                      icon: Icon(Icons.local_drink),
+                      icon: const Icon(Icons.local_drink),
                       onPressed: () {
                         user.addWaterIntake(330);
                       },
                     ),
-                    Text('330 mL')
+                    const Text('330 mL')
                   ],
                 ),
                 Column(
                   mainAxisSize: MainAxisSize.min,
                   children: <Widget>[
                     IconButton(
-                      icon: Icon(Icons.bathtub),
+                      icon: const Icon(Icons.bathtub),
                       onPressed: () async {
                         await _showCustomIntakeDialog();
                         user.addWaterIntake(_customIntake);
                       },
                     ),
-                    Text(MyLocalizations.of(context).tr("custom_intake"))
+                    Text(MyLocalizations.of(context)!.tr("custom_intake"))
                   ],
                 ),
               ],

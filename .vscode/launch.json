@@ -5,6 +5,20 @@
       "program": "lib/main.dart",
       "request": "launch",
       "type": "dart"
+    },
+    {
+      "type": "lldb",
+      "request": "launch",
+      "name": "princess_journey backend (Rust)",
+      "cargo": {
+        "args": ["build", "--manifest-path", "backend/Cargo.toml"]
+      },
+      "program": "${cargo:program}",
+      "args": [],
+      "env": {
+        "TOKEN": "token",
+        "RUST_LOG": "debug"
+      }
     }
   ]
 }

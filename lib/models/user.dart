@@ -1,48 +1,75 @@
+// ignore_for_file: overridden_fields
+
 import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
 import 'dart:async';
 import 'dart:io';
+import 'package:http/http.dart' as http;
+import 'package:http/http.dart';
 
-import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
 
-class User extends ChangeNotifier with LocalFilePersister {
+class User extends ChangeNotifier with Serialisable {
   // Periodic timer to update suscribers as time changes
-  Timer timer;
-  User({filename, gender, height, weight, targetWeight, hasTimer: false}) {
-    _fileName = filename ?? _fileName;
+  Timer? timer;
+  late Persister _persister;
+  @override
+  late int id;
+  User(
+      {required this.id,
+      persister,
+      gender,
+      height,
+      weight,
+      targetWeight,
+      hasTimer = false}) {
+    _persister = persister ?? FilePersister();
     _gender = gender ?? Gender.male;
     _height = height ?? 0;
-    weight ??= 0.0;
-    _weights.add(Measurement(_today(), weight));
+    if (weight != null && weight != 0) {
+      _weights.add(Weight(id, _today(), weight));
+    }
     _targetWeight = targetWeight ?? 0.0;
     if (hasTimer) {
       startTimer();
     }
   }
 
-  notifyAndPersist() {
+  set persister(Persister p) {
+    _persister = p;
+  }
+
+  persistAndNotify(Serialisable? child) async {
+    await _persister.write(this, child);
     notifyListeners();
-    write();
   }
 
   read() async {
-    await super.read();
+    try {
+      // ignore: unnecessary_this
+      this.fromJson(await _persister.read(this)!);
+    } on Exception {
+      rethrow;
+    }
     notifyListeners();
+  }
+
+  write() async {
+    _persister.write(this, null);
   }
 
   startTimer() {
     notifyListeners();
-    if (timer == null || !timer.isActive) {
-      timer = Timer.periodic(Duration(seconds: 5), (Timer t) {
+    if (timer == null || !timer!.isActive) {
+      timer = Timer.periodic(const Duration(seconds: 5), (Timer t) {
         notifyListeners();
       });
     }
   }
 
   stopTimer() {
-    timer.cancel();
+    timer!.cancel();
   }
 
   @override
@@ -56,7 +83,7 @@ class User extends ChangeNotifier with LocalFilePersister {
 
   set gender(Gender g) {
     _gender = g;
-    notifyAndPersist();
+    persistAndNotify(null);
   }
 
   Gender get gender => _gender;
@@ -66,7 +93,7 @@ class User extends ChangeNotifier with LocalFilePersister {
 
   set height(int h) {
     _height = h;
-    notifyAndPersist();
+    persistAndNotify(null);
   }
 
   int get height => _height;
@@ -78,44 +105,47 @@ class User extends ChangeNotifier with LocalFilePersister {
   }
 
   // Weight
-  var _weights = <Measurement>[];
+  var _weights = <Weight>[];
 
   set weight(v) {
+    Weight w;
     if (v == 0) return;
     if (_weights.isNotEmpty && _weights.last.date == _today()) {
-      _weights.last.value = v;
+      w = _weights.last;
+      w.value = v;
     } else {
-      _weights.add(Measurement(_today(), v));
+      w = Weight(id, _today(), v);
+      _weights.add(w);
     }
-    notifyAndPersist();
+    persistAndNotify(w);
   }
 
   double get weight {
     if (_weights.isNotEmpty) {
       return _weights.last.value;
     }
-    return 0;
+    return 0.0;
   }
 
-  List<Measurement> get weights => _weights;
+  List<Weight> get weights => _weights;
 
   double get lesserWeight {
     double v = 999;
-    _weights.forEach((e) {
+    for (var e in _weights) {
       if (e.value < v) {
         v = e.value;
       }
-    });
+    }
     return v;
   }
 
   double get greaterWeight {
     double v = 0;
-    _weights.forEach((e) {
+    for (var e in _weights) {
       if (e.value > v) {
         v = e.value;
       }
-    });
+    }
     return v;
   }
 
@@ -134,21 +164,24 @@ class User extends ChangeNotifier with LocalFilePersister {
 
   set targetWeight(double v) {
     _targetWeight = v;
-    notifyAndPersist();
+    persistAndNotify(null);
   }
 
   double get targetWeight => _targetWeight;
 
   // Water intake
-  var _waterIntakes = <Measurement>[];
+  var _waterIntakes = <WaterIntake>[];
 
   addWaterIntake(double w) {
+    WaterIntake wi;
     if (_waterIntakes.isNotEmpty && _waterIntakes.last.date == _today()) {
-      _waterIntakes.last.value += w;
+      wi = _waterIntakes.last;
+      wi.value += w;
     } else {
-      _waterIntakes.add(Measurement(_today(), w));
+      wi = WaterIntake(id, _today(), w);
+      _waterIntakes.add(wi);
     }
-    notifyAndPersist();
+    persistAndNotify(wi);
   }
 
   double get waterIntake {
@@ -158,7 +191,7 @@ class User extends ChangeNotifier with LocalFilePersister {
     return 0;
   }
 
-  List<Measurement> get waterIntakes => _waterIntakes;
+  List<WaterIntake> get waterIntakes => _waterIntakes;
 
   // Daily water target
 
@@ -168,7 +201,7 @@ class User extends ChangeNotifier with LocalFilePersister {
 
   set dailyWaterTarget(double v) {
     _dailyWaterTarget = v;
-    notifyAndPersist();
+    persistAndNotify(null);
   }
 
   double get waterTargetCompletion {
@@ -185,23 +218,26 @@ class User extends ChangeNotifier with LocalFilePersister {
   // Fasting
   var _fastingPeriods = <FastingPeriod>[];
 
-  setFastingPeriod(int v, [DateTime start]) {
+  setFastingPeriod(int v, [DateTime? start]) {
+    FastingPeriod fp;
     if (activeFastingPeriod != null) {
+      fp = activeFastingPeriod!;
       // The start can be altered any time ...
-      activeFastingPeriod.start = start ?? activeFastingPeriod.start;
+      fp.start = start ?? fp.start;
       // ... but the duration can only be augmented
-      if (v > activeFastingPeriod.duration) {
-        activeFastingPeriod.duration = v;
+      if (v > fp.duration) {
+        fp.duration = v;
       }
     } else {
       start = start ?? CDateTime.now();
-      _fastingPeriods.add(FastingPeriod(duration: v, start: start));
+      fp = FastingPeriod(userId: id, duration: v, start: start);
+      _fastingPeriods.add(fp);
     }
-    notifyAndPersist();
+    persistAndNotify(fp);
   }
 
   // The active fasting period is the most recent fasting period that is not closed
-  FastingPeriod get activeFastingPeriod {
+  FastingPeriod? get activeFastingPeriod {
     if (_fastingPeriods.isEmpty || _fastingPeriods.last.closed) {
       return null;
     }
@@ -209,24 +245,26 @@ class User extends ChangeNotifier with LocalFilePersister {
   }
 
   closeActiveFastingPeriod() {
-    if (activeFastingPeriod != null) {
-      activeFastingPeriod.close();
-      notifyAndPersist();
+    var ap = activeFastingPeriod;
+    if (ap != null) {
+      ap.close();
+      persistAndNotify(ap);
     }
   }
 
   // Failing a fasting period means removing it
   failActiveFastingPeriod() {
     if (activeFastingPeriod != null) {
+      _persister.remove(this, activeFastingPeriod);
       _fastingPeriods.removeLast();
+      notifyListeners();
     }
-    notifyAndPersist();
   }
 
   List<FastingPeriod> get fastingPeriods => _fastingPeriods;
 
   bool get canCreateAFastingPeriodYesterday {
-    var y = CDateTime.now().add(Duration(days: -1));
+    var y = CDateTime.now().add(const Duration(days: -1));
     // Creation case
     if (activeFastingPeriod == null &&
         _fastingPeriods.isNotEmpty &&
@@ -253,10 +291,11 @@ class User extends ChangeNotifier with LocalFilePersister {
     if (activeFastingPeriod == null) {
       return 0.0;
     }
-    double result = CDateTime.now()
-            .difference(activeFastingPeriod.start)
-            .inSeconds /
-        activeFastingPeriod.end.difference(activeFastingPeriod.start).inSeconds;
+    double result =
+        CDateTime.now().difference(activeFastingPeriod!.start).inSeconds /
+            activeFastingPeriod!.end
+                .difference(activeFastingPeriod!.start)
+                .inSeconds;
     return result > 1 ? 1 : result;
   }
 
@@ -298,25 +337,27 @@ class User extends ChangeNotifier with LocalFilePersister {
     return v;
   }
 
-  fromJson(String source) {
-    Map userMap = jsonDecode(source);
-    _gender = userMap['_gender'] == 1 ? Gender.male : Gender.female;
-    _height = userMap['_height'];
-    _weights = (userMap['_weights'] as List)
-        .map((e) => Measurement.fromJson(e))
+  @override
+  fromJson(Map map) {
+    id = map['id'];
+    _gender = map['_gender'] == 1 ? Gender.male : Gender.female;
+    _height = map['_height'];
+    _weights =
+        (map['_weights'] as List).map((e) => Weight.fromJson(e)).toList();
+    _targetWeight = map['_targetWeight'];
+    _dailyWaterTarget = map['_dailyWaterTarget'];
+    _waterIntakes = (map['_waterIntakes'] as List)
+        .map((e) => WaterIntake.fromJson(e))
         .toList();
-    _targetWeight = userMap['_targetWeight'];
-    _dailyWaterTarget = userMap['_dailyWaterTarget'];
-    _waterIntakes = (userMap['_waterIntakes'] as List)
-        .map((e) => Measurement.fromJson(e))
-        .toList();
-    _fastingPeriods = (userMap['_fastingPeriods'] as List)
+    _fastingPeriods = (map['_fastingPeriods'] as List)
         .map((e) => FastingPeriod.fromJson(e))
         .toList();
   }
 
-  String toJson() {
-    Map<String, dynamic> userMap = {
+  @override
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
       '_gender': _gender == Gender.male ? 1 : 2,
       '_height': _height,
       '_weights': _weights,
@@ -325,12 +366,11 @@ class User extends ChangeNotifier with LocalFilePersister {
       '_waterIntakes': _waterIntakes,
       '_fastingPeriods': _fastingPeriods
     };
-    return jsonEncode(userMap);
   }
 }
 
 extension CDateTime on DateTime {
-  static DateTime _customTime;
+  static DateTime? _customTime;
   static DateTime now() {
     return _customTime ?? DateTime.now();
   }
@@ -342,32 +382,54 @@ extension CDateTime on DateTime {
 
 enum Gender { male, female }
 
-class Measurement {
+class Measurement extends Serialisable {
+  @override
+  int id = 0;
+  int userId;
   DateTime date;
   double value;
-  Measurement(this.date, this.value);
+  Measurement(this.userId, this.date, this.value);
 
   @override
   String toString() {
     return value.toString();
   }
 
+  @override
   Map<String, dynamic> toJson() => {
+        'id': id,
+        'user_id': userId,
         'date': date.toIso8601String(),
         'value': value,
       };
 
   Measurement.fromJson(Map<String, dynamic> json)
-      : date = DateTime.parse(json['date']),
+      : id = json['id'],
+        userId = json['user_id'],
+        date = DateTime.parse(json['date']),
         value = json['value'];
 }
 
-class FastingPeriod {
+class Weight extends Measurement {
+  Weight(int userId, DateTime date, double value) : super(userId, date, value);
+  Weight.fromJson(Map<String, dynamic> json) : super.fromJson(json);
+}
+
+class WaterIntake extends Measurement {
+  WaterIntake(int userId, DateTime date, double value)
+      : super(userId, date, value);
+  WaterIntake.fromJson(Map<String, dynamic> json) : super.fromJson(json);
+}
+
+class FastingPeriod extends Serialisable {
+  @override
+  int id = 0;
+  int userId;
   DateTime start = CDateTime.now();
   int duration = 0;
   bool _closed = false;
 
-  FastingPeriod({duration, start}) {
+  FastingPeriod({required this.userId, duration, start}) {
     this.duration = duration ?? this.duration;
     this.start = start ?? this.start;
   }
@@ -385,19 +447,25 @@ class FastingPeriod {
 
   DateTime get end => start.add(Duration(hours: duration));
 
-  bool get started => CDateTime.now().difference(start) >= Duration(hours: 0);
-  bool get ended => CDateTime.now().difference(end) >= Duration(hours: 0);
+  bool get started =>
+      CDateTime.now().difference(start) >= const Duration(hours: 0);
+  bool get ended => CDateTime.now().difference(end) >= const Duration(hours: 0);
 
+  @override
   Map<String, dynamic> toJson() => {
+        'id': id,
+        'user_id': userId,
         'start': start.toIso8601String(),
         'duration': duration,
-        '_closed': _closed
+        'closed': _closed
       };
 
   FastingPeriod.fromJson(Map<String, dynamic> json)
-      : start = DateTime.parse(json['start']),
+      : id = json['id'],
+        userId = json['user_id'],
+        start = DateTime.parse(json['start']),
         duration = json['duration'],
-        _closed = json['_closed'];
+        _closed = json['closed'];
 }
 
 class FastingPeriodNotEndedException implements Exception {
@@ -405,35 +473,186 @@ class FastingPeriodNotEndedException implements Exception {
   FastingPeriodNotEndedException(this.cause);
 }
 
-abstract class LocalFilePersister {
-  fromJson(String source);
-  toJson();
+abstract class Serialisable {
+  fromJson(Map<String, dynamic> map) {}
+  int id = 0;
+  Map<String, dynamic> toJson();
+}
 
-  // Persistence
-  String _fileName = "princess.json";
+abstract class Persister {
+  Future<Map<String, dynamic>>? read(Serialisable parent);
+  write(Serialisable parent, Serialisable? child);
+  void remove(Serialisable parent, Serialisable? child);
+}
 
-  Future<File> get localFile async {
+class FilePersister extends Persister {
+  final String _fileName;
+  FilePersister({fileName = "user.json"}) : _fileName = fileName;
+
+  Future<File> getLocalFile() async {
     if (Platform.isAndroid) {
       final directory = await getExternalStorageDirectory();
-      await new Directory('${directory.path}').create(recursive: true);
+      await Directory(directory!.path).create(recursive: true);
       return File('${directory.path}/$_fileName');
     }
     final directory = await getApplicationDocumentsDirectory();
     return File('${directory.path}/$_fileName');
   }
 
-  read() async {
+  @override
+  Future<Map<String, dynamic>>? read(Serialisable parent) async {
     try {
-      final file = await localFile;
+      final file = await getLocalFile();
       String contents = await file.readAsString();
-      fromJson(contents);
+      return json.decode(contents);
     } catch (e) {
-      print("data could not be loaded from file, defaulting to new data");
+      throw Exception("data could not be loaded from file");
     }
   }
 
-  void write() async {
-    final file = await localFile;
-    file.writeAsString(toJson());
+  @override
+  write(Serialisable parent, Serialisable? child) async {
+    final file = await getLocalFile();
+    file.writeAsString(jsonEncode(parent.toJson()));
+  }
+
+  @override
+  void remove(Serialisable parent, Serialisable? child) {
+    write(parent, child);
+  }
+}
+
+class APIPersister extends Persister {
+  final String _base;
+  final String _token;
+  final int _targetId;
+  APIPersister(
+      {required String base, required String token, required int targetId})
+      : _base = base,
+        _token = token,
+        _targetId = targetId;
+
+  String get base => _base;
+  String get token => _token;
+  int get targetId => _targetId;
+
+  final client = http.Client();
+
+  @override
+  Future<Map<String, dynamic>> read(Serialisable parent) async {
+    if (parent.id == 0) parent.id = targetId;
+    String route = '$base/${getRouteFromObject(parent)}/${parent.id}';
+    try {
+      final response = await client.get(
+        Uri.parse(route),
+        headers: <String, String>{
+          'Authorization': "Bearer " + token,
+          'Content-Type': 'application/json'
+        },
+      );
+      if (response.statusCode == 200) {
+        return json.decode(utf8.decode(response.bodyBytes));
+      } else {
+        throw Exception('Failed to load object');
+      }
+    } on Exception {
+      rethrow;
+    }
+  }
+
+  @override
+  Future<void> remove(Serialisable parent, Serialisable? child) async {
+    String route = child != null
+        ? '$base/${getRouteFromObject(child)}/${child.id}'
+        : '$base/${getRouteFromObject(parent)}/${parent.id}';
+    try {
+      final response = await client.delete(
+        Uri.parse(route),
+        headers: <String, String>{'Authorization': "Bearer " + token},
+      );
+      if (response.statusCode != 200) {
+        throw Exception(response.body.toString());
+      }
+    } on Exception {
+      rethrow;
+    }
+  }
+
+  @override
+  write(Serialisable parent, Serialisable? child) async {
+    String route;
+    Response response;
+    var headers = <String, String>{
+      'Content-Type': 'application/json; charset=UTF-8',
+      'Authorization': "Bearer " + token
+    };
+    try {
+      if (child != null) {
+        if (child.id != 0) {
+          // PUT Request
+          route = '$base/${getRouteFromObject(child)}/${child.id}';
+
+          response = await client.put(
+            Uri.parse(route),
+            headers: headers,
+            body: jsonEncode(child),
+          );
+        } else {
+          // POST Request
+          route = '$base/${getRouteFromObject(child)}';
+          response = await client.post(
+            Uri.parse(route),
+            headers: headers,
+            body: jsonEncode(child),
+          );
+          // update child id
+          if (response.statusCode == 201) {
+            var respObj = json.decode(utf8.decode(response.bodyBytes));
+            child.id = respObj["id"];
+          } else {
+            throw Exception('Failed to create object');
+          }
+        }
+      } else {
+        if (parent.id != 0) {
+          // PUT Request
+          route = '$base/${getRouteFromObject(parent)}/${parent.id}';
+          response = await client.put(
+            Uri.parse(route),
+            headers: headers,
+            body: jsonEncode(parent),
+          );
+        } else {
+          parent.id = targetId;
+          // POST Request
+          route = '$base/${getRouteFromObject(parent)}';
+          response = await client.post(
+            Uri.parse(route),
+            headers: headers,
+            body: jsonEncode(parent),
+          );
+        }
+      }
+      if (response.statusCode != 200 && response.statusCode != 201) {
+        throw Exception(response.body.toString());
+      }
+    } on Exception {
+      rethrow;
+    }
+  }
+
+  String getRouteFromObject(dynamic object) {
+    switch (object.runtimeType) {
+      case User:
+        return 'users';
+      case Weight:
+        return 'weights';
+      case WaterIntake:
+        return 'water_intakes';
+      case FastingPeriod:
+        return 'fasting_periods';
+      default:
+        return 'unknown';
+    }
   }
 }

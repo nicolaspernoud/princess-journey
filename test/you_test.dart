@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:princess_journey/globals.dart';
 import 'package:princess_journey/i18n.dart';
 import 'package:provider/provider.dart';
 
@@ -12,15 +13,20 @@ Future<void> main() async {
 
   // Create a new user
   User u = User(
-      gender: Gender.female, height: 160, weight: 60.0, targetWeight: 55.0);
+      id: 0,
+      gender: Gender.female,
+      height: 160,
+      weight: 60.0,
+      targetWeight: 55.0);
+  App().init();
   testWidgets('You tests', (WidgetTester tester) async {
     // Build our app and trigger a frame
     await tester.pumpWidget(ChangeNotifierProvider.value(
       value: u,
-      child: MaterialApp(
+      child: const MaterialApp(
         home: Scaffold(body: You()),
         localizationsDelegates: [
-          const MyLocalizationsDelegate(),
+          MyLocalizationsDelegate(),
         ],
       ),
     ));

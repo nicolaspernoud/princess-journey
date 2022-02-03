@@ -1,14 +1,24 @@
 // Import the test package and Counter class
+import 'dart:io';
+import 'dart:convert';
+
 import 'package:flutter/src/foundation/change_notifier.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:princess_journey/models/user.dart';
 
+class _MyHttpOverrides extends HttpOverrides {}
+
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
+  HttpOverrides.global = _MyHttpOverrides();
 
   group('Behaviour', () {
     final User user = User(
-        gender: Gender.female, height: 160, weight: 60.0, targetWeight: 55.0);
+        id: 0,
+        gender: Gender.female,
+        height: 160,
+        weight: 60.0,
+        targetWeight: 55.0);
     test("The calculated BMI should be correct", () {
       expect(user.bmi, 23.44);
     });
@@ -28,35 +38,36 @@ void main() {
       // The daily fasting progress should be 0 when starting fasting period
       expect(user.dailyFastingProgress, 0);
       // Let 5 hours pass
-      CDateTime.customTime = start.add(Duration(hours: 5));
+      CDateTime.customTime = start.add(const Duration(hours: 5));
       // The daily fasting progress should be 50% after half of the fasting period
       expect(user.dailyFastingProgress, 0.5);
       // During the fasting period, we can change the start and increase the duration
       user.setFastingPeriod(12, CDateTime.now());
-      expect(user.activeFastingPeriod.started, true);
+      expect(user.activeFastingPeriod!.started, true);
       expect(user.fastingPeriods.length, 1);
-      expect(user.activeFastingPeriod.start, CDateTime.now());
-      expect(user.activeFastingPeriod.duration, 12);
+      expect(user.activeFastingPeriod!.start, CDateTime.now());
+      expect(user.activeFastingPeriod!.duration, 12);
       // But we cannot reduce the duration
       user.setFastingPeriod(10);
-      expect(user.activeFastingPeriod.duration, 12);
+      expect(user.activeFastingPeriod!.duration, 12);
       // Nor close the period
-      expect(() => user.activeFastingPeriod.close(), throwsException);
-      expect(user.activeFastingPeriod.closed, false);
+      expect(() => user.activeFastingPeriod!.close(), throwsException);
+      expect(user.activeFastingPeriod!.closed, false);
       // Let wait for the end of the fasting period
-      CDateTime.customTime = start.add(Duration(hours: 5 + 12));
+      CDateTime.customTime = start.add(const Duration(hours: 5 + 12));
       // The daily fasting progress should be 100% when the fasting period is completed
-      expect(user.activeFastingPeriod.started, true);
-      expect(user.activeFastingPeriod.ended, true);
+      expect(user.activeFastingPeriod!.started, true);
+      expect(user.activeFastingPeriod!.ended, true);
       expect(user.dailyFastingProgress, 1);
       // Yet, we cannot yet create a new fasting period before closing the current one
       user.setFastingPeriod(10);
       expect(user.fastingPeriods.length, 1);
-      expect(user.activeFastingPeriod.start, start.add(Duration(hours: 5)));
+      expect(
+          user.activeFastingPeriod!.start, start.add(const Duration(hours: 5)));
       // We now can close the fasting period
       expect(user.canCreateAFastingPeriodYesterday,
           true); // Ok because only one fasting period
-      expect(() => user.activeFastingPeriod.close(), returnsNormally);
+      expect(() => user.activeFastingPeriod!.close(), returnsNormally);
       expect(user.activeFastingPeriod, null);
       expect(user.dailyFastingProgress, 0);
       // But now we can add a new feeding period right now
@@ -64,22 +75,22 @@ void main() {
           false); // Not ok, the only period is closed
       user.setFastingPeriod(10, CDateTime.now());
       expect(user.fastingPeriods.length, 2);
-      expect(user.activeFastingPeriod.start, CDateTime.now());
+      expect(user.activeFastingPeriod!.start, CDateTime.now());
       // Wait for the end of the new fasting period
-      CDateTime.customTime = start.add(Duration(hours: 48));
+      CDateTime.customTime = start.add(const Duration(hours: 48));
       expect(user.canCreateAFastingPeriodYesterday, true);
       // Close the period
-      user.activeFastingPeriod.close();
+      user.activeFastingPeriod!.close();
       // Check that we can create a new starting period starting in the future
-      user.setFastingPeriod(10, CDateTime.now().add(Duration(hours: 1)));
+      user.setFastingPeriod(10, CDateTime.now().add(const Duration(hours: 1)));
       expect(user.fastingPeriods.length, 3);
-      expect(user.activeFastingPeriod.start,
-          CDateTime.now().add(Duration(hours: 1)));
+      expect(user.activeFastingPeriod!.start,
+          CDateTime.now().add(const Duration(hours: 1)));
       // Check that we can alter it to set in in the past
-      user.setFastingPeriod(10, CDateTime.now().add(Duration(hours: -1)));
+      user.setFastingPeriod(10, CDateTime.now().add(const Duration(hours: -1)));
       expect(user.fastingPeriods.length, 3);
-      expect(user.activeFastingPeriod.start,
-          CDateTime.now().add(Duration(hours: -1)));
+      expect(user.activeFastingPeriod!.start,
+          CDateTime.now().add(const Duration(hours: -1)));
       // Check that we can fail a fasting period
       user.failActiveFastingPeriod();
       expect(user.fastingPeriods.length, 2);
@@ -97,14 +108,18 @@ void main() {
       user.addWaterIntake(100);
       expect(user.waterTargetCompletion, 200 / 1500);
       // The progress should reset on the next day
-      CDateTime.customTime = start.add(Duration(days: 1));
+      CDateTime.customTime = start.add(const Duration(days: 1));
       expect(user.waterTargetCompletion, 0);
     });
   });
 
   group('Achievements', () {
     final User u = User(
-        gender: Gender.female, height: 160, weight: 60.0, targetWeight: 55.0);
+        id: 0,
+        gender: Gender.female,
+        height: 160,
+        weight: 60.0,
+        targetWeight: 55.0);
     test("The calculated daysOfFasting and maxDaysOfFasting should be correct",
         () {
       // Freeze time
@@ -115,27 +130,27 @@ void main() {
       // Create a fasting period for now
       u.setFastingPeriod(10);
       // Wait a day, close the fasting period, and create another one
-      CDateTime.customTime = start.add(Duration(days: 1));
+      CDateTime.customTime = start.add(const Duration(days: 1));
       u.closeActiveFastingPeriod();
       u.setFastingPeriod(10);
       expect(u.daysOfFasting, 1);
       expect(u.maxDaysOfFasting, 1);
       // Wait a day, close the fasting period, and create another one
-      CDateTime.customTime = start.add(Duration(days: 2));
+      CDateTime.customTime = start.add(const Duration(days: 2));
       u.closeActiveFastingPeriod();
       u.setFastingPeriod(10);
       expect(u.daysOfFasting, 2);
       // Wait for TWO days, close the fasting period, and create another one
-      CDateTime.customTime = start.add(Duration(days: 4));
+      CDateTime.customTime = start.add(const Duration(days: 4));
       u.closeActiveFastingPeriod();
       expect(u.daysOfFasting, 0);
       u.setFastingPeriod(10);
       expect(u.daysOfFasting, 0);
       // Wait a day, close the fasting period, and create another one
-      CDateTime.customTime = start.add(Duration(days: 5));
+      CDateTime.customTime = start.add(const Duration(days: 5));
       u.closeActiveFastingPeriod();
       u.setFastingPeriod(10);
-      CDateTime.customTime = start.add(Duration(days: 6));
+      CDateTime.customTime = start.add(const Duration(days: 6));
       u.closeActiveFastingPeriod();
       // The current fasting days should be 2, but the best fasting days shoud be 3
       expect(u.daysOfFasting, 2);
@@ -145,7 +160,7 @@ void main() {
 
   test("Updating the user should trigger listener notification", () async {
     final User user = User(
-        filename: "listener_notification_princess.json",
+        id: 0,
         gender: Gender.female,
         height: 160,
         weight: 60.0,
@@ -164,7 +179,7 @@ void main() {
       (User user) => user.height,
       (User user) => user.weight,
       (User user) => user.targetWeight,
-      (User user) => user.activeFastingPeriod.duration,
+      (User user) => user.activeFastingPeriod!.duration,
       (User user) => user.waterIntake,
       (User user) => user.height,
     ], <dynamic>[
@@ -185,36 +200,47 @@ void main() {
       expect(u.weight, 60);
       expect(u.targetWeight, 55);
       expect(u.waterIntake, 120);
-      expect(u.activeFastingPeriod.duration, 12);
+      expect(u.activeFastingPeriod!.duration, 12);
     }
 
-    test('Writing an user to disk and reading it should get equals users',
+    test('Writing an user to storage and reading it should get equals users',
         () async {
       // Create user
+      var persister = FilePersister(fileName: "user_test.json");
+      //var persister =
+      //APIPersister(base: "http://localhost:8080/api", token: 'token');
       final User user1 = User(
-          filename: "data_persistence_princess.json",
+          id: 1,
+          persister: persister,
           gender: Gender.female,
           height: 170,
-          weight: 60.0,
           targetWeight: 55.0);
+      await user1.write();
+      // Set weight
+      user1.weight = 60.0;
       // Add water intake
       user1.addWaterIntake(120);
       // Add fasting period
       user1.setFastingPeriod(12, CDateTime.now());
       // Create another user from json
-      final User user2 = User(filename: "data_persistence_princess.json");
+      final User user2 = User(
+        id: 1,
+        persister: persister,
+      );
       await user2.read();
-      //print(user2.toJson());
+      //print(jsonEncode(user2.toJson()));
       // Check that both users are equals
       expectPersistence(user2);
     });
 
     test('Reading an user from string should get the correct user', () async {
       // Create another user from json
-      final User user = User();
+      final User user = User(
+        id: 0,
+      );
       String contents =
-          '{"_gender":2,"_height":170,"_weights":[{"date":"2021-01-19T00:00:00.000","value":60.0}],"_targetWeight":55.0,"_dailyWaterTarget":1000.0,"_waterIntakes":[{"date":"2021-01-19T00:00:00.000","value":120.0}],"_fastingPeriods":[{"start":"2021-01-19T22:37:10.573335","duration":12,"_closed":false}]}';
-      await user.fromJson(contents);
+          '{"id":1,"_gender":2,"_height":170,"_weights":[{"id":1,"user_id":1,"date":"2022-02-07T00:00:00.000","value":60.0},{"id":2,"user_id":1,"date":"2022-02-07T00:00:00.000","value":60.0},{"id":3,"user_id":1,"date":"2022-02-07T00:00:00.000","value":60.0}],"_targetWeight":55.0,"_dailyWaterTarget":1000.0,"_waterIntakes":[{"id":1,"user_id":1,"date":"2022-02-07T00:00:00.000","value":120.0}],"_fastingPeriods":[{"id":1,"user_id":1,"start":"2022-02-07T15:37:49.569792","duration":12,"closed":false}]}';
+      await user.fromJson(jsonDecode(contents));
       // Check that the user is correctly hydrated
       CDateTime.customTime = DateTime.parse("2021-01-14T17:32:43.973580");
       expectPersistence(user);

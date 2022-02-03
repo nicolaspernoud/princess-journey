@@ -1,4 +1,5 @@
-<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="com.ninico.princess_journey">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="fr.ninico.princess_journey">
     <!-- Flutter needs it to communicate with the running application
          to allow setting breakpoints, to provide hot reload, etc.
     -->

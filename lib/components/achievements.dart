@@ -5,6 +5,8 @@ import 'package:princess_journey/models/user.dart';
 import '../i18n.dart';
 
 class Achievements extends StatefulWidget {
+  const Achievements({Key? key}) : super(key: key);
+
   @override
   _AchievementsState createState() => _AchievementsState();
 }
@@ -21,10 +23,10 @@ class _AchievementsState extends State<Achievements> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: <Widget>[
                       ListTile(
-                          leading: Icon(Icons.explore),
-                          title: Text(
-                              MyLocalizations.of(context).tr("journey_so_far")),
-                          subtitle: Text(MyLocalizations.of(context)
+                          leading: const Icon(Icons.explore),
+                          title: Text(MyLocalizations.of(context)!
+                              .tr("journey_so_far")),
+                          subtitle: Text(MyLocalizations.of(context)!
                               .journeySoFarDetails(
                                   user.daysOfFasting, user.maxDaysOfFasting)))
                     ]))),
@@ -37,10 +39,10 @@ class _AchievementsState extends State<Achievements> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: <Widget>[
                         ListTile(
-                          leading: Icon(Icons.spa),
-                          title: Text(MyLocalizations.of(context)
+                          leading: const Icon(Icons.spa),
+                          title: Text(MyLocalizations.of(context)!
                               .tr("butterfly_princess")),
-                          subtitle: Text(MyLocalizations.of(context)
+                          subtitle: Text(MyLocalizations.of(context)!
                               .tr("butterfly_princess_details")),
                         )
                       ]))),
@@ -53,10 +55,10 @@ class _AchievementsState extends State<Achievements> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: <Widget>[
                         ListTile(
-                          leading: Icon(Icons.weekend),
-                          title: Text(MyLocalizations.of(context)
+                          leading: const Icon(Icons.weekend),
+                          title: Text(MyLocalizations.of(context)!
                               .tr("princess_of_nothing")),
-                          subtitle: Text(MyLocalizations.of(context)
+                          subtitle: Text(MyLocalizations.of(context)!
                               .tr("princess_of_nothing_details")),
                         )
                       ]))),
@@ -69,10 +71,10 @@ class _AchievementsState extends State<Achievements> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: <Widget>[
                         ListTile(
-                          leading: Icon(Icons.house_siding),
-                          title: Text(MyLocalizations.of(context)
+                          leading: const Icon(Icons.house_siding),
+                          title: Text(MyLocalizations.of(context)!
                               .tr("princess_of_the_palace")),
-                          subtitle: Text(MyLocalizations.of(context)
+                          subtitle: Text(MyLocalizations.of(context)!
                               .tr("princess_of_the_palace_details")),
                         )
                       ]))),
@@ -85,10 +87,10 @@ class _AchievementsState extends State<Achievements> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: <Widget>[
                         ListTile(
-                          leading: Icon(Icons.alt_route),
-                          title: Text(MyLocalizations.of(context)
+                          leading: const Icon(Icons.alt_route),
+                          title: Text(MyLocalizations.of(context)!
                               .tr("princess_of_the_path")),
-                          subtitle: Text(MyLocalizations.of(context)
+                          subtitle: Text(MyLocalizations.of(context)!
                               .tr("princess_of_the_path_details")),
                         )
                       ]))),
@@ -101,10 +103,10 @@ class _AchievementsState extends State<Achievements> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: <Widget>[
                         ListTile(
-                          leading: Icon(Icons.favorite),
+                          leading: const Icon(Icons.favorite),
                           title: Text(
-                              MyLocalizations.of(context).tr("not_an_end")),
-                          subtitle: Text(MyLocalizations.of(context)
+                              MyLocalizations.of(context)!.tr("not_an_end")),
+                          subtitle: Text(MyLocalizations.of(context)!
                               .tr("not_an_end_details")),
                         )
                       ]))),
@@ -118,10 +120,10 @@ class _AchievementsState extends State<Achievements> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: <Widget>[
                         ListTile(
-                          leading: Icon(Icons.favorite_border),
+                          leading: const Icon(Icons.favorite_border),
                           title: Text(
-                              MyLocalizations.of(context).tr("not_a_failure")),
-                          subtitle: Text(MyLocalizations.of(context)
+                              MyLocalizations.of(context)!.tr("not_a_failure")),
+                          subtitle: Text(MyLocalizations.of(context)!
                               .tr("not_a_failure_details")),
                         )
                       ])))

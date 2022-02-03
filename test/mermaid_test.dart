@@ -12,15 +12,19 @@ Future<void> main() async {
 
   // Create a new user
   User u = User(
-      gender: Gender.female, height: 160, weight: 60.0, targetWeight: 55.0);
+      id: 0,
+      gender: Gender.female,
+      height: 160,
+      weight: 60.0,
+      targetWeight: 55.0);
   testWidgets('Mermaid tests', (WidgetTester tester) async {
     // Build our app and trigger a frame
     await tester.pumpWidget(ChangeNotifierProvider.value(
       value: u,
-      child: MaterialApp(
+      child: const MaterialApp(
         home: Scaffold(body: Mermaid()),
         localizationsDelegates: [
-          const MyLocalizationsDelegate(),
+          MyLocalizationsDelegate(),
         ],
       ),
     ));
@@ -52,7 +56,7 @@ Future<void> main() async {
     // Tap the custom intake button
     await tester.tap(find.byIcon(Icons.bathtub));
     await tester.pump();
-    await tester.drag(find.byType(Slider), Offset(9999, 0));
+    await tester.drag(find.byType(Slider), const Offset(9999, 0));
     await tester.tap(find.text("OK"));
     await tester.pump();
     expect(

@@ -4,11 +4,13 @@ import 'package:princess_journey/components/water_intakes_chart.dart';
 import 'package:princess_journey/components/weight_chart.dart';
 import 'package:princess_journey/models/user.dart';
 import 'package:provider/provider.dart';
-import 'package:customgauge/customgauge.dart';
+import 'package:pretty_gauge/pretty_gauge.dart';
 
 import '../i18n.dart';
 
 class Journey extends StatefulWidget {
+  const Journey({Key? key}) : super(key: key);
+
   @override
   _JourneyState createState() => _JourneyState();
 }
@@ -25,10 +27,10 @@ class _JourneyState extends State<Journey> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: <Widget>[
                       ListTile(
-                          leading: Icon(Icons.fitness_center),
+                          leading: const Icon(Icons.fitness_center),
                           title: Text(
-                              MyLocalizations.of(context).tr("your_weight"))),
-                      WeightChart(height: 200),
+                              MyLocalizations.of(context)!.tr("your_weight"))),
+                      const WeightChart(height: 200),
                     ]))),
         Card(
             child: Padding(
@@ -37,11 +39,12 @@ class _JourneyState extends State<Journey> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: <Widget>[
                       ListTile(
-                        leading: Icon(Icons.pie_chart),
-                        title: Text(MyLocalizations.of(context).tr("your_bmi")),
+                        leading: const Icon(Icons.pie_chart),
+                        title:
+                            Text(MyLocalizations.of(context)!.tr("your_bmi")),
                       ),
                       Consumer<User>(
-                          builder: (context, user, child) => CustomGauge(
+                          builder: (context, user, child) => PrettyGauge(
                                 showMarkers: false,
                                 gaugeSize: 100,
                                 minValue: 0,
@@ -71,7 +74,7 @@ class _JourneyState extends State<Journey> {
                                 ],
                                 currentValue: user.bmi,
                                 valueWidget: Text(user.bmi.toString(),
-                                    style: TextStyle(
+                                    style: const TextStyle(
                                         fontSize: 12,
                                         fontWeight: FontWeight.bold)),
                               )),
@@ -83,12 +86,12 @@ class _JourneyState extends State<Journey> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: <Widget>[
                       ListTile(
-                          leading: Icon(Icons.opacity),
-                          title: Text(MyLocalizations.of(context)
+                          leading: const Icon(Icons.opacity),
+                          title: Text(MyLocalizations.of(context)!
                               .tr("your_water_intake"))),
-                      WaterIntakesChart(height: 200),
+                      const WaterIntakesChart(height: 200),
                     ]))),
-        Achievements(),
+        const Achievements(),
       ],
     );
   }

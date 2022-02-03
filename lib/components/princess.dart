@@ -5,6 +5,8 @@ import 'package:princess_journey/models/user.dart';
 import '../i18n.dart';
 
 class Princess extends StatefulWidget {
+  const Princess({Key? key}) : super(key: key);
+
   @override
   _PrincessState createState() => _PrincessState();
 }
@@ -18,27 +20,27 @@ class _PrincessState extends State<Princess> {
       final date = await showDatePicker(
         context: context,
         initialDate: CDateTime.now(),
-        builder: (BuildContext context, Widget child) {
+        builder: (BuildContext context, Widget? child) {
           return MediaQuery(
             data: MediaQuery.of(context).copyWith(alwaysUse24HourFormat: true),
-            child: child,
+            child: child!,
           );
         },
         firstDate: user.canCreateAFastingPeriodYesterday
-            ? CDateTime.now().add(Duration(days: -1))
+            ? CDateTime.now().add(const Duration(days: -1))
             : CDateTime.now(),
-        lastDate: CDateTime.now().add(Duration(days: 1)),
+        lastDate: CDateTime.now().add(const Duration(days: 1)),
       );
       if (date != null) {
-        final TimeOfDay picked = await showTimePicker(
+        final TimeOfDay? picked = await showTimePicker(
           context: context,
           initialTime: TimeOfDay(
               hour: CDateTime.now().hour, minute: CDateTime.now().minute),
-          builder: (BuildContext context, Widget child) {
+          builder: (BuildContext context, Widget? child) {
             return MediaQuery(
               data:
                   MediaQuery.of(context).copyWith(alwaysUse24HourFormat: true),
-              child: child,
+              child: child!,
             );
           },
         );
@@ -53,8 +55,8 @@ class _PrincessState extends State<Princess> {
 
     //Duration selector
     double _duration;
-    Future<void> _selectDuration(User user) async {
-      _duration = user?.activeFastingPeriod?.duration?.toDouble() ?? 12;
+    Future<void> _selectDuration(User? user) async {
+      _duration = user?.activeFastingPeriod?.duration.toDouble() ?? 12;
       double startValue = _duration;
       return showDialog<void>(
           context: context,
@@ -62,12 +64,12 @@ class _PrincessState extends State<Princess> {
           builder: (BuildContext context) {
             return StatefulBuilder(builder: (context, setState) {
               return AlertDialog(
-                title: Text(MyLocalizations.of(context).tr("select_duration")),
+                title: Text(MyLocalizations.of(context)!.tr("select_duration")),
                 content: Column(mainAxisSize: MainAxisSize.min, children: [
                   Slider(
                     value: _duration,
-                    min: (user.activeFastingPeriod != null &&
-                            user.activeFastingPeriod.started)
+                    min: (user!.activeFastingPeriod != null &&
+                            user.activeFastingPeriod!.started)
                         ? startValue
                         : 12,
                     divisions: 24 - startValue.round(),
@@ -83,14 +85,14 @@ class _PrincessState extends State<Princess> {
                 ]),
                 actions: <Widget>[
                   TextButton(
-                    child: Text(MyLocalizations.of(context).tr("cancel")),
+                    child: Text(MyLocalizations.of(context)!.tr("cancel")),
                     onPressed: () {
                       _duration = startValue;
                       Navigator.of(context).pop();
                     },
                   ),
                   TextButton(
-                    child: Text('OK'),
+                    child: const Text('OK'),
                     onPressed: () async {
                       Navigator.of(context).pop();
                       await _selectTime(user, _duration.round());
@@ -111,18 +113,18 @@ class _PrincessState extends State<Princess> {
           children: <Widget>[
             if (user.activeFastingPeriod != null)
               ListTile(
-                leading: Icon(Icons.no_meals),
-                title: Text(MyLocalizations.of(context).fastingHours(user)),
-                subtitle:
-                    Text(MyLocalizations.of(context).fastingHoursDetails(user)),
+                leading: const Icon(Icons.no_meals),
+                title: Text(MyLocalizations.of(context)!.fastingHours(user)),
+                subtitle: Text(
+                    MyLocalizations.of(context)!.fastingHoursDetails(user)),
               ),
             if (user.activeFastingPeriod == null)
               ListTile(
-                leading: Icon(Icons.restaurant),
-                title: Text(MyLocalizations.of(context).tr("taking_break")),
+                leading: const Icon(Icons.restaurant),
+                title: Text(MyLocalizations.of(context)!.tr("taking_break")),
                 subtitle: user.fastingPeriods.isNotEmpty
-                    ? Text(MyLocalizations.of(context).nextFastingPeriod(user))
-                    : Text(MyLocalizations.of(context)
+                    ? Text(MyLocalizations.of(context)!.nextFastingPeriod(user))
+                    : Text(MyLocalizations.of(context)!
                         .tr("create_fasting_period")),
               ),
             Padding(
@@ -136,7 +138,8 @@ class _PrincessState extends State<Princess> {
                     backgroundColor: user.activeFastingPeriod == null
                         ? Colors.green
                         : Colors.grey,
-                    valueColor: new AlwaysStoppedAnimation<Color>(Colors.pink),
+                    valueColor:
+                        const AlwaysStoppedAnimation<Color>(Colors.pink),
                     value: user.dailyFastingProgress,
                   )),
             ),
@@ -148,12 +151,12 @@ class _PrincessState extends State<Princess> {
                     mainAxisSize: MainAxisSize.min,
                     children: <Widget>[
                       IconButton(
-                        icon: Icon(Icons.add_circle),
+                        icon: const Icon(Icons.add_circle),
                         onPressed: () async {
                           await _selectDuration(user);
                         },
                       ),
-                      Text(MyLocalizations.of(context).tr("create")),
+                      Text(MyLocalizations.of(context)!.tr("create")),
                     ],
                   )
                 else ...[
@@ -161,37 +164,37 @@ class _PrincessState extends State<Princess> {
                     mainAxisSize: MainAxisSize.min,
                     children: <Widget>[
                       IconButton(
-                        icon: Icon(Icons.create),
+                        icon: const Icon(Icons.create),
                         onPressed: () async {
                           await _selectDuration(user);
                         },
                       ),
-                      Text(MyLocalizations.of(context).tr("edit")),
+                      Text(MyLocalizations.of(context)!.tr("edit")),
                     ],
                   ),
-                  if (user.activeFastingPeriod.ended)
+                  if (user.activeFastingPeriod!.ended)
                     Column(
                       mainAxisSize: MainAxisSize.min,
                       children: <Widget>[
                         IconButton(
-                          icon: Icon(Icons.done),
+                          icon: const Icon(Icons.done),
                           onPressed: () async {
                             user.closeActiveFastingPeriod();
                           },
                         ),
-                        Text(MyLocalizations.of(context).tr("success")),
+                        Text(MyLocalizations.of(context)!.tr("success")),
                       ],
                     ),
                   Column(
                     mainAxisSize: MainAxisSize.min,
                     children: <Widget>[
                       IconButton(
-                        icon: Icon(Icons.clear),
+                        icon: const Icon(Icons.clear),
                         onPressed: () async {
                           user.failActiveFastingPeriod();
                         },
                       ),
-                      Text(MyLocalizations.of(context).tr("failure")),
+                      Text(MyLocalizations.of(context)!.tr("failure")),
                     ],
                   ),
                 ]

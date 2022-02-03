@@ -11,11 +11,11 @@ class MyLocalizations {
 
   final Locale locale;
 
-  static MyLocalizations of(BuildContext context) {
+  static MyLocalizations? of(BuildContext context) {
     return Localizations.of<MyLocalizations>(context, MyLocalizations);
   }
 
-  static Map<String, Map<String, String>> _localizedValues = {
+  static final Map<String, Map<String, String>> _localizedValues = {
     'en': {
       'cancel': 'CANCEL',
       'your_day': 'Your day',
@@ -62,7 +62,14 @@ class MyLocalizations {
       "your_height": "Your height (cm)",
       "your_weight_kg": "Your weight (kg)",
       "your_desired_weight": "Your desired weight (kg)",
-      "your_daily_water_goal": "Your daily water intake goal (mL): "
+      "your_daily_water_goal": "Your daily water intake goal (mL) ",
+      "remote_storage": "Store data on remote server",
+      "hostname": "Hostname",
+      "token": "Security token",
+      "remote_user_id": "Remote user ID",
+      "user": "User",
+      "loading_users": "Loading user...",
+      "cannot_load_users": "Server configuration error, data will not be saved."
     },
     'fr': {
       'cancel': 'ANNULER',
@@ -110,17 +117,25 @@ class MyLocalizations {
       "your_height": "Votre taille (cm)",
       "your_weight_kg": "Votre poids (kg)",
       "your_desired_weight": "Votre poids souhaité (kg)",
-      "your_daily_water_goal": "Votre apport en eau quotidien (mL) : "
+      "your_daily_water_goal": "Votre apport en eau quotidien (mL) ",
+      "remote_storage": "Stocker les données sur un serveur distant",
+      "hostname": "Nom du serveur",
+      "token": "Jeton de sécurité",
+      "remote_user_id": "ID de l'utilisateur distant",
+      "user": "Utilisateur",
+      "loading_users": "Chargement des utilisateurs...",
+      "cannot_load_users":
+          "Erreur de configuration serveur : les données ne seront pas sauvegardées."
     },
   };
 
   String tr(String token) {
-    return _localizedValues[locale.languageCode][token] ?? token;
+    return _localizedValues[locale.languageCode]![token] ?? token;
   }
 
   static String localizedValue(String locale, String token) {
     final lcl = ['en', 'fr'].contains(locale) ? locale : 'en';
-    return _localizedValues[lcl][token] ?? token;
+    return _localizedValues[lcl]![token] ?? token;
   }
 
   String journeySoFarDetails(int days, int maxDays) {
@@ -132,29 +147,29 @@ class MyLocalizations {
         "Longest ever fasting is $maxDays consecutives days.";
   }
 
-  String fastingHours(User user) {
+  String fastingHours(User? user) {
     if (locale.languageCode == 'fr') {
       return "Jeûne de ${user?.activeFastingPeriod?.duration ?? ""} heures...";
     }
     return "Fasting ${user?.activeFastingPeriod?.duration ?? ""} hours...";
   }
 
-  String fastingHoursDetails(User user) {
+  String fastingHoursDetails(User? user) {
     if (locale.languageCode == 'fr') {
-      final df = new DateFormat("HH:mm le dd/MM/yyyy ");
-      return "Depuis ${df.format(user.activeFastingPeriod?.start) ?? ""}\nJusqu'à ${df.format(user?.activeFastingPeriod?.end) ?? ""}";
+      final df = DateFormat("HH:mm le dd/MM/yyyy ");
+      return "Depuis ${df.format(user!.activeFastingPeriod!.start)}\nJusqu'à ${df.format(user.activeFastingPeriod!.end)}";
     }
-    final df = new DateFormat("yyyy-MM-dd HH:mm");
-    return "From ${df.format(user.activeFastingPeriod?.start) ?? ""}\nUntil ${df.format(user?.activeFastingPeriod?.end) ?? ""}";
+    final df = DateFormat("yyyy-MM-dd HH:mm");
+    return "From ${df.format(user!.activeFastingPeriod!.start)}\nUntil ${df.format(user.activeFastingPeriod!.end)}";
   }
 
   String nextFastingPeriod(User user) {
     if (locale.languageCode == 'fr') {
-      final df = new DateFormat("HH:mm le dd/MM/yyyy ");
-      return "Votre prochain jeûne pourrait démarrer à ${df.format(user.fastingPeriods.last.start.add(Duration(days: 1)))}";
+      final df = DateFormat("HH:mm le dd/MM/yyyy ");
+      return "Votre prochain jeûne pourrait démarrer à ${df.format(user.fastingPeriods.last.start.add(const Duration(days: 1)))}";
     }
-    final df = new DateFormat("yyyy-MM-dd HH:mm");
-    return "Your next fasting period should start at ${df.format(user.fastingPeriods.last.start.add(Duration(days: 1)))}";
+    final df = DateFormat("yyyy-MM-dd HH:mm");
+    return "Your next fasting period should start at ${df.format(user.fastingPeriods.last.start.add(const Duration(days: 1)))}";
   }
 }
 
@@ -166,7 +181,7 @@ class MyLocalizationsDelegate extends LocalizationsDelegate<MyLocalizations> {
 
   @override
   Future<MyLocalizations> load(Locale locale) {
-    // Returning a SynchronousFuture here because an async "load" operation
+    // Returning a SynchronousFuture here because an async 'load' operation
     // isn't needed to produce an instance of MyLocalizations.
     return SynchronousFuture<MyLocalizations>(MyLocalizations(locale));
   }

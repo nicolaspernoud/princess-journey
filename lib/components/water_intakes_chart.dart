@@ -4,7 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:princess_journey/models/user.dart';
 
 class WaterIntakesChart extends StatefulWidget {
-  WaterIntakesChart({Key key, this.height}) : super(key: key);
+  const WaterIntakesChart({Key? key, required this.height}) : super(key: key);
   final double height;
   @override
   _WaterIntakesChartState createState() => _WaterIntakesChartState();
@@ -17,7 +17,7 @@ class _WaterIntakesChartState extends State<WaterIntakesChart> {
       var lsStart =
           user.waterIntakes.length > 7 ? user.waterIntakes.length - 7 : 0;
       final data = [
-        new charts.Series<Measurement, String>(
+        charts.Series<Measurement, String>(
           id: 'Water intakes',
           colorFn: (_, __) => charts.MaterialPalette.blue.shadeDefault,
           domainFn: (Measurement m, _) => m.date.day.toString(),
@@ -32,7 +32,7 @@ class _WaterIntakesChartState extends State<WaterIntakesChart> {
           child: charts.BarChart(
             data,
             animate: true,
-            defaultRenderer: new charts.BarRendererConfig(
+            defaultRenderer: charts.BarRendererConfig(
                 cornerStrategy: const charts.ConstCornerStrategy(30)),
           ));
     });

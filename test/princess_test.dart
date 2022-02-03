@@ -13,15 +13,19 @@ Future<void> main() async {
 
   // Create a new user
   User u = User(
-      gender: Gender.female, height: 160, weight: 60.0, targetWeight: 55.0);
+      id: 0,
+      gender: Gender.female,
+      height: 160,
+      weight: 60.0,
+      targetWeight: 55.0);
   testWidgets('Princess tests', (WidgetTester tester) async {
     // Build our app and trigger a frame
     await tester.pumpWidget(ChangeNotifierProvider.value(
       value: u,
-      child: MaterialApp(
+      child: const MaterialApp(
         home: Scaffold(body: Princess()),
         localizationsDelegates: [
-          const MyLocalizationsDelegate(),
+          MyLocalizationsDelegate(),
         ],
       ),
     ));
@@ -49,8 +53,8 @@ Future<void> main() async {
     await tester.tapAt(Offset(center.dx + 10, center.dy));
     await tester.tap(find.text("OK"));
     expect(u.fastingPeriods.length, 1);
-    expect(u.activeFastingPeriod.duration, 18);
-    expect(u.activeFastingPeriod.start.hour, 6);
+    expect(u.activeFastingPeriod!.duration, 18);
+    expect(u.activeFastingPeriod!.start.hour, 6);
     await tester.pump();
     // Check that the cancel button does not alter the fasting periods
     await tester.tap(find.byIcon(Icons.create));
@@ -58,9 +62,9 @@ Future<void> main() async {
     await tester.tap(find.text("CANCEL"));
     await tester.pump();
     expect(u.fastingPeriods.length, 1);
-    expect(u.activeFastingPeriod.duration, 18);
-    expect(u.activeFastingPeriod.start.hour, 6);
-    expect(u.activeFastingPeriod.start.day, 28);
+    expect(u.activeFastingPeriod!.duration, 18);
+    expect(u.activeFastingPeriod!.start.hour, 6);
+    expect(u.activeFastingPeriod!.start.day, 28);
 
     // Check that the cancel button on date picker does not alter the fasting periods
     await tester.tap(find.byIcon(Icons.create));
@@ -72,9 +76,9 @@ Future<void> main() async {
     await tester.tap(find.text("CANCEL"));
     await tester.pump();
     expect(u.fastingPeriods.length, 1);
-    expect(u.activeFastingPeriod.duration, 18);
-    expect(u.activeFastingPeriod.start.hour, 6);
-    expect(u.activeFastingPeriod.start.day, 28);
+    expect(u.activeFastingPeriod!.duration, 18);
+    expect(u.activeFastingPeriod!.start.hour, 6);
+    expect(u.activeFastingPeriod!.start.day, 28);
 
     // Check that the cancel button on time picker does not alter the fasting periods
     await tester.tap(find.byIcon(Icons.create));
@@ -88,9 +92,9 @@ Future<void> main() async {
     await tester.tap(find.text("CANCEL"));
     await tester.pump();
     expect(u.fastingPeriods.length, 1);
-    expect(u.activeFastingPeriod.duration, 18);
-    expect(u.activeFastingPeriod.start.hour, 6);
-    expect(u.activeFastingPeriod.start.day, 28);
+    expect(u.activeFastingPeriod!.duration, 18);
+    expect(u.activeFastingPeriod!.start.hour, 6);
+    expect(u.activeFastingPeriod!.start.day, 28);
 
     // Check that the CircularProgressIndicator displays correct value
     expect(
@@ -104,7 +108,7 @@ Future<void> main() async {
         findsOneWidget);
 
     // The daily fasting progress should follow the time
-    CDateTime.customTime = start.add(Duration(hours: 6));
+    CDateTime.customTime = start.add(const Duration(hours: 6));
     u.notifyListeners();
     await tester.pump();
     expect(
@@ -136,8 +140,8 @@ Future<void> main() async {
     await tester.tapAt(Offset(center.dx + 10, center.dy + 10));
     await tester.tap(find.text("OK"));
     expect(u.fastingPeriods.length, 1);
-    expect(u.activeFastingPeriod.duration, 21);
-    expect(u.activeFastingPeriod.start.hour, 9);
+    expect(u.activeFastingPeriod!.duration, 21);
+    expect(u.activeFastingPeriod!.start.hour, 9);
 
     await tester.pump();
     // Check that the CircularProgressIndicator displays correct value
@@ -154,7 +158,7 @@ Future<void> main() async {
     expect(find.byIcon(Icons.done), findsNothing);
 
     // The daily fasting progress should be 100% when the fasting period is completed
-    CDateTime.customTime = start.add(Duration(hours: 21 - 3));
+    CDateTime.customTime = start.add(const Duration(hours: 21 - 3));
     u.notifyListeners();
     await tester.pump();
     expect(
@@ -189,9 +193,9 @@ Future<void> main() async {
     await tester.tapAt(Offset(center.dx + 10, center.dy));
     await tester.tap(find.text("OK"));
     expect(u.fastingPeriods.length, 2);
-    expect(u.activeFastingPeriod.duration, 18);
-    expect(u.activeFastingPeriod.start.hour, 6);
-    expect(u.activeFastingPeriod.start.day, 29);
+    expect(u.activeFastingPeriod!.duration, 18);
+    expect(u.activeFastingPeriod!.start.hour, 6);
+    expect(u.activeFastingPeriod!.start.day, 29);
 
     // Wait for a while , create a new period, test that it can be created for yesterday
     CDateTime.customTime = DateTime(2021, 02, 05, 12, 0);
@@ -213,9 +217,9 @@ Future<void> main() async {
     await tester.tapAt(Offset(center.dx + 10, center.dy));
     await tester.tap(find.text("OK"));
     expect(u.fastingPeriods.length, 3);
-    expect(u.activeFastingPeriod.duration, 18);
-    expect(u.activeFastingPeriod.start.hour, 6);
-    expect(u.activeFastingPeriod.start.day, 04);
+    expect(u.activeFastingPeriod!.duration, 18);
+    expect(u.activeFastingPeriod!.start.hour, 6);
+    expect(u.activeFastingPeriod!.start.day, 04);
 
     // Test that it can be altered to be postponed to tomorrow
     await tester.pump();
@@ -232,8 +236,8 @@ Future<void> main() async {
     await tester.tapAt(Offset(center.dx + 10, center.dy));
     await tester.tap(find.text("OK"));
     expect(u.fastingPeriods.length, 3);
-    expect(u.activeFastingPeriod.duration, 18);
-    expect(u.activeFastingPeriod.start.hour, 6);
-    expect(u.activeFastingPeriod.start.day, 6);
+    expect(u.activeFastingPeriod!.duration, 18);
+    expect(u.activeFastingPeriod!.start.hour, 6);
+    expect(u.activeFastingPeriod!.start.day, 6);
   });
 }
