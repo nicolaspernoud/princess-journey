@@ -68,7 +68,7 @@ pub async fn read(
     oid: web::Path<i32>,
 ) -> Result<HttpResponse, ServerError> {
     let conn = pool.get()?;
-    let object = web::block(move || {
+    match web::block(move || {
         let u: Result<User, diesel::result::Error> =
             users::table.filter(users::id.eq(*oid)).first(&conn);
         let u = match u {
@@ -105,7 +105,12 @@ pub async fn read(
             water_intakes: water_intakes,
         })
     })
-    .await?;
-    log::debug!("Fetched object: {:?}", object);
-    Ok(HttpResponse::Ok().json(object))
+    .await?
+    {
+        Ok(out_user) => {
+            log::debug!("Fetched object: {:?}", out_user);
+            Ok(HttpResponse::Ok().json(out_user))
+        }
+        Err(_) => Ok(HttpResponse::NotFound().body("User not found")),
+    }
 }

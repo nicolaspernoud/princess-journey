@@ -34,11 +34,11 @@ macro_rules! create_app {
     ($pool:expr, $app_config:expr) => {{
         use crate::models::{fasting_period, user, water_intake, weight};
         use actix_cors::Cors;
-        use actix_web::{error, middleware, web, App, HttpResponse};
+        use actix_web::{error, middleware, web, web::Data, App, HttpResponse};
         use actix_web_httpauth::middleware::HttpAuthentication;
 
         App::new()
-            .data($pool.clone())
+            .app_data(Data::new($pool.clone()))
             .app_data(
                 web::JsonConfig::default()
                     .limit(4096)
