@@ -182,7 +182,7 @@ pub async fn user_test(
         &format!("/api/weights/{idw1}"),
         "",
         StatusCode::NOT_FOUND,
-        "No object found with id:"
+        "Item not found"
     );
     do_test!(
         app,
@@ -190,7 +190,7 @@ pub async fn user_test(
         &format!("/api/water_intakes/{idwi1}"),
         "",
         StatusCode::NOT_FOUND,
-        "No object found with id:"
+        "Item not found"
     );
     do_test!(
         app,
@@ -198,7 +198,7 @@ pub async fn user_test(
         &format!("/api/fasting_periods/{idfp1}"),
         "",
         StatusCode::NOT_FOUND,
-        "No object found with id:"
+        "Item not found"
     );
 
     // Delete a non existing user
@@ -208,7 +208,7 @@ pub async fn user_test(
         &format!("/api/users/{}", id + 1),
         "",
         StatusCode::NOT_FOUND,
-        "No object found with id:"
+        "Item not found"
     );
 
     // Delete all the users

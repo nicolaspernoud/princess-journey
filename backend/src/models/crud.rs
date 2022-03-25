@@ -1,11 +1,11 @@
 #[macro_export]
 macro_rules! crud_use {
     () => {
-        use crate::errors::ServerError;
         use actix_web::{delete, get, post, put, web, HttpResponse};
         use diesel::prelude::*;
         use diesel::r2d2::ConnectionManager;
         type DbPool = r2d2::Pool<ConnectionManager<SqliteConnection>>;
+        use crate::errors::ServerError;
     };
 }
 
@@ -18,19 +18,12 @@ macro_rules! crud_read {
             oid: web::Path<i32>,
         ) -> Result<HttpResponse, ServerError> {
             let conn = pool.get()?;
-            let iid = oid.clone();
             let object = web::block(move || {
                 use crate::schema::$table::dsl::*;
-                $table.filter(id.eq(oid.clone())).first::<$model>(&conn)
+                $table.filter(id.eq(*oid)).first::<$model>(&conn)
             })
-            .await?;
-            if let Ok(object) = object {
-                Ok(HttpResponse::Ok().json(object))
-            } else {
-                let res =
-                    HttpResponse::NotFound().body(format!("No object found with id: {}", iid));
-                Ok(res)
-            }
+            .await??;
+            Ok(HttpResponse::Ok().json(object))
         }
     };
 }
@@ -45,13 +38,8 @@ macro_rules! crud_read_all {
                 use crate::schema::$table::dsl::*;
                 $table.order(id.asc()).load::<$model>(&conn)
             })
-            .await?;
-            if let Ok(object) = object {
-                Ok(HttpResponse::Ok().json(object))
-            } else {
-                let res = HttpResponse::NotFound().body("No objects found");
-                Ok(res)
-            }
+            .await??;
+            Ok(HttpResponse::Ok().json(object))
         }
     };
 }
@@ -65,27 +53,20 @@ macro_rules! crud_create {
             o: web::Json<$inmodel>,
         ) -> Result<HttpResponse, ServerError> {
             let conn = pool.get()?;
-            match web::block(move || {
+            let created_o: Result<$outmodel, ServerError> = web::block(move || {
                 $(
                     // Check that parent for our object exists
                     crate::schema::$parent_table::dsl::$parent_table.find(o.$parent_table_id).first::<$parent_model>(&conn)?;
                 )*
                 use crate::schema::$table::dsl::*;
                 diesel::insert_into($table)
-                    .values(o.clone())
+                    .values(&*o)
                     .execute(&conn)?;
-                let o = $table.order(id.desc()).first::<$outmodel>(&conn);
-                o
+                let o = $table.order(id.desc()).first::<$outmodel>(&conn)?;
+                Ok(o)
             })
-            .await? {
-                Ok(created_o) => Ok(HttpResponse::Created().json(created_o)),
-                Err(e) => match e {
-                    diesel::result::Error::DatabaseError(_,_) => Ok(HttpResponse::Conflict().body(format!("{}", e))),
-                    diesel::result::Error::NotFound => Ok(HttpResponse::NotFound().body("Item not found")),
-                    _ => Ok(HttpResponse::InternalServerError().body("")),
-                },
-
-            }
+            .await?;
+                Ok(HttpResponse::Created().json(created_o?))
         }
     };
 }
@@ -100,28 +81,22 @@ macro_rules! crud_update {
             oid: web::Path<i32>,
         ) -> Result<HttpResponse, ServerError> {
             let conn = pool.get()?;
-            let o_value = o.clone();
-            let iid = oid.clone();
-            let put_o = web::block(move || {
+            let put_o: Result<$model, ServerError> = web::block(move || {
                 $(
                     // Check that parent for our object exists
                     crate::schema::$parent_table::dsl::$parent_table.find(o.$parent_table_id).first::<$parent_model>(&conn)?;
                 )*
                 use crate::schema::$table::dsl::*;
+
                 diesel::update($table)
-                    .filter(id.eq(oid.clone()))
-                    .set(o_value)
+                    .filter(id.eq(*oid))
+                    .set(&*o)
                     .execute(&conn)?;
-                $table.filter(id.eq(oid.clone())).first::<$model>(&conn)
+                let o = $table.filter(id.eq(*oid)).first::<$model>(&conn)?;
+                Ok(o)
             })
             .await?;
-            if let Ok(put_o) = put_o {
-                Ok(HttpResponse::Ok().json(put_o))
-            } else {
-                let res =
-                    HttpResponse::NotFound().body(format!("No object found with id: {}", iid));
-                Ok(res)
-            }
+            Ok(HttpResponse::Ok().json(put_o?))
         }
     };
 }
@@ -136,8 +111,7 @@ macro_rules! crud_delete {
         ) -> Result<HttpResponse, ServerError> {
             let conn = pool.get()?;
             let oid = *oid;
-            let iid = oid.clone();
-            let d = web::block(move || {
+            web::block(move || {
                 use crate::schema::$table::dsl::*;
                 let deleted = diesel::delete($table).filter(id.eq(oid)).execute(&conn)?;
                 match deleted {
@@ -145,14 +119,8 @@ macro_rules! crud_delete {
                     _ => Ok(deleted),
                 }
             })
-            .await?;
-            if let Ok(_) = d {
-                Ok(HttpResponse::Ok().body(format!("Deleted object with id: {}", oid)))
-            } else {
-                let res =
-                    HttpResponse::NotFound().body(format!("No object found with id: {}", iid));
-                Ok(res)
-            }
+            .await??;
+            Ok(HttpResponse::Ok().body(format!("Deleted object with id: {}", oid)))
         }
     };
 }
@@ -163,7 +131,7 @@ macro_rules! crud_delete_all {
         #[delete("")]
         pub async fn delete_all(pool: web::Data<DbPool>) -> Result<HttpResponse, ServerError> {
             let conn = pool.get()?;
-            let d = web::block(move || {
+            web::block(move || {
                 use crate::schema::$table::dsl::*;
                 let deleted = diesel::delete($table).execute(&conn)?;
                 match deleted {
@@ -171,13 +139,8 @@ macro_rules! crud_delete_all {
                     _ => Ok(deleted),
                 }
             })
-            .await?;
-            if let Ok(_) = d {
-                Ok(HttpResponse::Ok().body("Deleted all objects"))
-            } else {
-                let res = HttpResponse::NotFound().body("No objects found");
-                Ok(res)
-            }
+            .await??;
+            Ok(HttpResponse::Ok().body("Deleted all objects"))
         }
     };
 }
