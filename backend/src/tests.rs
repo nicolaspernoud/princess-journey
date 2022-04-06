@@ -1,5 +1,7 @@
 #[cfg(test)]
 mod tests {
+    use actix_web::web::Data;
+
     use crate::{app::AppConfig, models::user_tests::user_test};
     #[actix_rt::test]
     async fn test_models() {
@@ -22,7 +24,8 @@ mod tests {
 
         // Set up authorization token
         let app_config = AppConfig::new("0101".to_string());
+        let app_data = Data::new(app_config);
 
-        user_test(&pool, app_config.clone()).await;
+        user_test(&pool, &app_data).await;
     }
 }

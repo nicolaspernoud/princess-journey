@@ -2,7 +2,6 @@ use actix_web::error::{self};
 use actix_web::{dev::ServiceRequest, Error};
 use actix_web_httpauth::extractors::bearer::BearerAuth;
 
-#[derive(Clone)]
 pub struct AppConfig {
     pub bearer_token: String,
 }
@@ -31,7 +30,7 @@ pub async fn validator(
 
 #[macro_export]
 macro_rules! create_app {
-    ($pool:expr, $app_config:expr) => {{
+    ($pool:expr, $app_data:expr) => {{
         use crate::models::{fasting_period, user, water_intake, weight};
         use actix_cors::Cors;
         use actix_web::{error, middleware, web, web::Data, App, HttpResponse};
@@ -47,7 +46,7 @@ macro_rules! create_app {
                             .into()
                     }),
             )
-            .app_data(web::Data::new($app_config))
+            .app_data(Data::clone($app_data))
             .wrap(Cors::permissive())
             .wrap(middleware::Logger::default())
             .service(
