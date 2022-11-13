@@ -12,10 +12,10 @@ class Journey extends StatefulWidget {
   const Journey({Key? key}) : super(key: key);
 
   @override
-  _JourneyState createState() => _JourneyState();
+  JourneyState createState() => JourneyState();
 }
 
-class _JourneyState extends State<Journey> {
+class JourneyState extends State<Journey> {
   @override
   Widget build(BuildContext context) {
     return ListView(

@@ -8,14 +8,14 @@ class Princess extends StatefulWidget {
   const Princess({Key? key}) : super(key: key);
 
   @override
-  _PrincessState createState() => _PrincessState();
+  PrincessState createState() => PrincessState();
 }
 
-class _PrincessState extends State<Princess> {
+class PrincessState extends State<Princess> {
   @override
   Widget build(BuildContext context) {
     // Time selector
-    Future<void> _selectTime(User user, int duration) async {
+    Future<void> selectTime(User user, int duration) async {
       // Case of non existent or inactive fasting period
       final date = await showDatePicker(
         context: context,
@@ -54,10 +54,10 @@ class _PrincessState extends State<Princess> {
     }
 
     //Duration selector
-    double _duration;
-    Future<void> _selectDuration(User? user) async {
-      _duration = user?.activeFastingPeriod?.duration.toDouble() ?? 12;
-      double startValue = _duration;
+    double duration;
+    Future<void> selectDuration(User? user) async {
+      duration = user?.activeFastingPeriod?.duration.toDouble() ?? 12;
+      double startValue = duration;
       return showDialog<void>(
           context: context,
           barrierDismissible: false, // user must tap button!
@@ -67,27 +67,27 @@ class _PrincessState extends State<Princess> {
                 title: Text(MyLocalizations.of(context)!.tr("select_duration")),
                 content: Column(mainAxisSize: MainAxisSize.min, children: [
                   Slider(
-                    value: _duration,
+                    value: duration,
                     min: (user!.activeFastingPeriod != null &&
                             user.activeFastingPeriod!.started)
                         ? startValue
                         : 12,
                     divisions: 24 - startValue.round(),
                     max: 24,
-                    label: _duration.toString(),
+                    label: duration.toString(),
                     onChanged: (double value) {
                       setState(() {
-                        _duration = value;
+                        duration = value;
                       });
                     },
                   ),
-                  Text("$_duration h")
+                  Text("$duration h")
                 ]),
                 actions: <Widget>[
                   TextButton(
                     child: Text(MyLocalizations.of(context)!.tr("cancel")),
                     onPressed: () {
-                      _duration = startValue;
+                      duration = startValue;
                       Navigator.of(context).pop();
                     },
                   ),
@@ -95,7 +95,7 @@ class _PrincessState extends State<Princess> {
                     child: const Text('OK'),
                     onPressed: () async {
                       Navigator.of(context).pop();
-                      await _selectTime(user, _duration.round());
+                      await selectTime(user, duration.round());
                     },
                   ),
                 ],
@@ -153,7 +153,7 @@ class _PrincessState extends State<Princess> {
                       IconButton(
                         icon: const Icon(Icons.add_circle),
                         onPressed: () async {
-                          await _selectDuration(user);
+                          await selectDuration(user);
                         },
                       ),
                       Text(MyLocalizations.of(context)!.tr("create")),
@@ -166,7 +166,7 @@ class _PrincessState extends State<Princess> {
                       IconButton(
                         icon: const Icon(Icons.create),
                         onPressed: () async {
-                          await _selectDuration(user);
+                          await selectDuration(user);
                         },
                       ),
                       Text(MyLocalizations.of(context)!.tr("edit")),

@@ -8,10 +8,10 @@ class Achievements extends StatefulWidget {
   const Achievements({Key? key}) : super(key: key);
 
   @override
-  _AchievementsState createState() => _AchievementsState();
+  AchievementsState createState() => AchievementsState();
 }
 
-class _AchievementsState extends State<Achievements> {
+class AchievementsState extends State<Achievements> {
   @override
   Widget build(BuildContext context) {
     return Consumer<User>(builder: (context, user, child) {

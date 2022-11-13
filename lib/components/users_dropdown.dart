@@ -17,10 +17,10 @@ class UsersDropdown extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  _UsersDropdownState createState() => _UsersDropdownState();
+  UsersDropdownState createState() => UsersDropdownState();
 }
 
-class _UsersDropdownState extends State<UsersDropdown> {
+class UsersDropdownState extends State<UsersDropdown> {
   Future<List<int>> users = Future.value(<int>[]);
   late int _index;
   bool _loading = false;
@@ -32,13 +32,13 @@ class _UsersDropdownState extends State<UsersDropdown> {
   }
 
   Future<List<int>> getUsersList() async {
-    var base = App().prefs.hostname + "/api";
+    var base = "${App().prefs.hostname}/api";
     var token = App().prefs.token;
     String route = '$base/users';
     final response = await http.get(
       Uri.parse(route),
       headers: <String, String>{
-        'Authorization': "Bearer " + token,
+        'Authorization': "Bearer $token",
         'Content-Type': 'application/json'
       },
     );

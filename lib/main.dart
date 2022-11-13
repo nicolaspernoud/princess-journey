@@ -28,7 +28,7 @@ main() async {
   await App().init();
   if (App().prefs.remoteStorage) {
     u.persister = APIPersister(
-      base: App().prefs.hostname + "/api",
+      base: "${App().prefs.hostname}/api",
       token: App().prefs.token,
       targetId: App().prefs.userId,
     );
@@ -75,10 +75,10 @@ class MainPage extends StatefulWidget {
   const MainPage({Key? key, required this.title}) : super(key: key);
   final String title;
   @override
-  _MainPageState createState() => _MainPageState();
+  MainPageState createState() => MainPageState();
 }
 
-class _MainPageState extends State<MainPage> with WidgetsBindingObserver {
+class MainPageState extends State<MainPage> with WidgetsBindingObserver {
   int _selectedIndex = 0;
 
   late PageController _pageController;
@@ -87,13 +87,13 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver {
   void initState() {
     super.initState();
     _pageController = PageController();
-    WidgetsBinding.instance?.addObserver(this);
+    WidgetsBinding.instance.addObserver(this);
   }
 
   @override
   void dispose() {
     _pageController.dispose();
-    WidgetsBinding.instance?.removeObserver(this);
+    WidgetsBinding.instance.removeObserver(this);
     super.dispose();
   }
 
@@ -173,6 +173,7 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver {
   }
 }
 
+@pragma('vm:entry-point')
 void callbackDispatcher() {
   Workmanager().executeTask((task, inputData) async {
     // Update views
@@ -182,7 +183,7 @@ void callbackDispatcher() {
     await App().init();
     if (App().prefs.remoteStorage) {
       user.persister = APIPersister(
-        base: App().prefs.hostname + "/api",
+        base: "${App().prefs.hostname}/api",
         token: App().prefs.token,
         targetId: App().prefs.userId,
       );
@@ -193,7 +194,7 @@ void callbackDispatcher() {
       FlutterLocalNotificationsPlugin flip = FlutterLocalNotificationsPlugin();
       var android =
           const AndroidInitializationSettings('@mipmap/notification_icon');
-      var ios = const IOSInitializationSettings();
+      var ios = const DarwinInitializationSettings();
       var settings = InitializationSettings(android: android, iOS: ios);
       flip.initialize(settings);
       _showNotificationWithDefaultSound(
@@ -215,7 +216,7 @@ Future _showNotificationWithDefaultSound(
       importance: Importance.max,
       priority: Priority.high,
       color: Colors.pink);
-  var iOSPlatformChannelSpecifics = const IOSNotificationDetails();
+  var iOSPlatformChannelSpecifics = const DarwinNotificationDetails();
   var platformChannelSpecifics = NotificationDetails(
       android: androidPlatformChannelSpecifics,
       iOS: iOSPlatformChannelSpecifics);

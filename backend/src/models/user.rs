@@ -7,17 +7,9 @@ use crate::{
 use super::{fasting_period::FastingPeriod, water_intake::WaterIntake, weight::Weight};
 
 #[derive(
-    Debug,
-    Clone,
-    Serialize,
-    Deserialize,
-    Queryable,
-    Insertable,
-    AsChangeset,
-    Identifiable,
-    Associations,
+    Debug, Clone, Serialize, Deserialize, Queryable, Insertable, AsChangeset, Identifiable,
 )]
-#[table_name = "users"]
+#[diesel(table_name = users)]
 pub struct User {
     pub id: i32,
     #[serde(rename = "_gender")]
@@ -31,7 +23,7 @@ pub struct User {
 }
 
 #[derive(Debug, Clone, Deserialize, Insertable)]
-#[table_name = "users"]
+#[diesel(table_name = users)]
 pub struct InUser {
     #[serde(rename = "_gender")]
     pub gender: i32,
@@ -67,31 +59,31 @@ pub async fn read(
     pool: web::Data<DbPool>,
     oid: web::Path<i32>,
 ) -> Result<HttpResponse, ServerError> {
-    let conn = pool.get()?;
+    let mut conn = pool.get()?;
     match web::block(move || {
         let u: Result<User, diesel::result::Error> =
-            users::table.filter(users::id.eq(*oid)).first(&conn);
+            users::table.filter(users::id.eq(*oid)).first(&mut conn);
         let u = match u {
             Ok(r) => r,
             Err(e) => {
                 return Err(format!("Could not get user: {e}"));
             }
         };
-        let weights = <Weight>::belonging_to(&u).load(&conn);
+        let weights = <Weight>::belonging_to(&u).load(&mut conn);
         let weights = match weights {
             Ok(r) => r,
             Err(e) => {
                 return Err(format!("Could not get weights for user: {e}"));
             }
         };
-        let fasting_periods = <FastingPeriod>::belonging_to(&u).load(&conn);
+        let fasting_periods = <FastingPeriod>::belonging_to(&u).load(&mut conn);
         let fasting_periods = match fasting_periods {
             Ok(r) => r,
             Err(e) => {
                 return Err(format!("Could not get fasting periods for user: {e}"));
             }
         };
-        let water_intakes = <WaterIntake>::belonging_to(&u).load(&conn);
+        let water_intakes = <WaterIntake>::belonging_to(&u).load(&mut conn);
         let water_intakes = match water_intakes {
             Ok(r) => r,
             Err(e) => {

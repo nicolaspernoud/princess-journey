@@ -154,9 +154,9 @@ class User extends ChangeNotifier with Serialisable {
     if (_height == 0 || _weights.isEmpty) {
       return 0;
     }
-    final _heightM = _height / 100;
+    final heightM = _height / 100;
     return double.parse(
-        ((_weights.last.value / (_heightM * _heightM))).toStringAsFixed(2));
+        ((_weights.last.value / (heightM * heightM))).toStringAsFixed(2));
   }
 
   // Target Weight
@@ -546,7 +546,7 @@ class APIPersister extends Persister {
       final response = await client.get(
         Uri.parse(route),
         headers: <String, String>{
-          'Authorization': "Bearer " + token,
+          'Authorization': "Bearer $token",
           'Content-Type': 'application/json'
         },
       );
@@ -568,7 +568,7 @@ class APIPersister extends Persister {
     try {
       final response = await client.delete(
         Uri.parse(route),
-        headers: <String, String>{'Authorization': "Bearer " + token},
+        headers: <String, String>{'Authorization': "Bearer $token"},
       );
       if (response.statusCode != 200) {
         throw Exception(response.body.toString());
@@ -584,7 +584,7 @@ class APIPersister extends Persister {
     Response response;
     var headers = <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
-      'Authorization': "Bearer " + token
+      'Authorization': "Bearer $token"
     };
     try {
       if (child != null) {

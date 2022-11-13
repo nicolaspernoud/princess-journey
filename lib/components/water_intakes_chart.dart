@@ -1,4 +1,4 @@
-import 'package:charts_flutter/flutter.dart' as charts;
+import 'package:charts_flutter_new/flutter.dart' as charts;
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:princess_journey/models/user.dart';
@@ -7,10 +7,10 @@ class WaterIntakesChart extends StatefulWidget {
   const WaterIntakesChart({Key? key, required this.height}) : super(key: key);
   final double height;
   @override
-  _WaterIntakesChartState createState() => _WaterIntakesChartState();
+  WaterIntakesChartState createState() => WaterIntakesChartState();
 }
 
-class _WaterIntakesChartState extends State<WaterIntakesChart> {
+class WaterIntakesChartState extends State<WaterIntakesChart> {
   @override
   Widget build(BuildContext context) {
     return Consumer<User>(builder: (context, user, child) {

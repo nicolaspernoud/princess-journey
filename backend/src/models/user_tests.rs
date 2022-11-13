@@ -19,6 +19,18 @@ pub async fn user_test(
         .to_request();
     test::call_service(&mut app, req).await;
 
+    // Check that using the wrong token gives an unauthorized error
+    let req = test::TestRequest::with_uri("/api/users")
+        .method(Method::GET)
+        .insert_header(("Authorization", "Bearer 0102"))
+        .to_request();
+    use actix_web::dev::Service;
+    let resp = app.call(req).await.unwrap();
+    assert_eq!(resp.status(), 401);
+    let body = test::read_body(resp).await;
+    let body = std::str::from_utf8(&body).unwrap().to_string();
+    assert_eq!(body, "Wrong token!");
+
     // Create a user
     let id = do_test_extract_id!(
         app,

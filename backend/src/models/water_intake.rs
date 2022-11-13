@@ -16,8 +16,8 @@ use crate::{
     Identifiable,
     Associations,
 )]
-#[table_name = "water_intakes"]
-#[belongs_to(User)]
+#[diesel(table_name = water_intakes)]
+#[diesel(belongs_to(User))]
 pub struct WaterIntake {
     pub id: i32,
     pub user_id: i32,
@@ -26,8 +26,8 @@ pub struct WaterIntake {
 }
 
 #[derive(Debug, Clone, Deserialize, Insertable, Associations)]
-#[table_name = "water_intakes"]
-#[belongs_to(User)]
+#[diesel(table_name = water_intakes)]
+#[diesel(belongs_to(User))]
 pub struct InWaterIntake {
     pub user_id: i32,
     pub date: String,

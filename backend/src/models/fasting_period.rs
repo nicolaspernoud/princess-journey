@@ -16,8 +16,8 @@ use crate::{
     Identifiable,
     Associations,
 )]
-#[table_name = "fasting_periods"]
-#[belongs_to(User)]
+#[diesel(table_name = fasting_periods)]
+#[diesel(belongs_to(User))]
 pub struct FastingPeriod {
     pub id: i32,
     pub user_id: i32,
@@ -27,8 +27,8 @@ pub struct FastingPeriod {
 }
 
 #[derive(Debug, Clone, Deserialize, Insertable, Associations)]
-#[table_name = "fasting_periods"]
-#[belongs_to(User)]
+#[diesel(table_name = fasting_periods)]
+#[diesel(belongs_to(User))]
 pub struct InFastingPeriod {
     pub user_id: i32,
     pub start: String,

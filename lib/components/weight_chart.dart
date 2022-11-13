@@ -1,6 +1,6 @@
 import 'dart:math';
 
-import 'package:charts_flutter/flutter.dart' as charts;
+import 'package:charts_flutter_new/flutter.dart' as charts;
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:princess_journey/models/user.dart';
@@ -11,10 +11,10 @@ class WeightChart extends StatefulWidget {
   const WeightChart({Key? key, required this.height}) : super(key: key);
   final double height;
   @override
-  _WeightChartState createState() => _WeightChartState();
+  WeightChartState createState() => WeightChartState();
 }
 
-class _WeightChartState extends State<WeightChart> {
+class WeightChartState extends State<WeightChart> {
   @override
   Widget build(BuildContext context) {
     return Consumer<User>(builder: (context, user, child) {

@@ -16,8 +16,8 @@ use crate::{
     Identifiable,
     Associations,
 )]
-#[table_name = "weights"]
-#[belongs_to(User)]
+#[diesel(table_name = weights)]
+#[diesel(belongs_to(User))]
 pub struct Weight {
     pub id: i32,
     pub user_id: i32,
@@ -26,8 +26,8 @@ pub struct Weight {
 }
 
 #[derive(Debug, Clone, Deserialize, Insertable, Associations)]
-#[table_name = "weights"]
-#[belongs_to(User)]
+#[diesel(table_name = weights)]
+#[diesel(belongs_to(User))]
 pub struct InWeight {
     pub user_id: i32,
     pub date: String,

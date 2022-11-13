@@ -12,13 +12,13 @@ class You extends StatefulWidget {
   const You({Key? key}) : super(key: key);
 
   @override
-  _YouState createState() => _YouState();
+  YouState createState() => YouState();
 }
 
 final doubleOnly = RegExp(r'^(?:0|[1-9][0-9]*)(?:\.[0-9]*)?$');
 final intOnly = RegExp(r'^(?:0|[1-9][0-9]*)$');
 
-class _YouState extends State<You> {
+class YouState extends State<You> {
   TextEditingController? _heightController;
   TextEditingController? _weightController;
   TextEditingController? _targetWeightController;
@@ -189,7 +189,7 @@ class _YouState extends State<You> {
   Future<void> setRemoteStorage(User user) async {
     if (App().prefs.remoteStorage) {
       var p = APIPersister(
-        base: App().prefs.hostname + "/api",
+        base: "${App().prefs.hostname}/api",
         token: App().prefs.token,
         targetId: App().prefs.userId,
       );

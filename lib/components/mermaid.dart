@@ -8,10 +8,10 @@ class Mermaid extends StatefulWidget {
   const Mermaid({Key? key}) : super(key: key);
 
   @override
-  _MermaidState createState() => _MermaidState();
+  MermaidState createState() => MermaidState();
 }
 
-class _MermaidState extends State<Mermaid> {
+class MermaidState extends State<Mermaid> {
   @override
   Widget build(BuildContext context) {
     return Card(
@@ -49,14 +49,14 @@ class Drinks extends StatefulWidget {
   const Drinks({Key? key}) : super(key: key);
 
   @override
-  _DrinksState createState() => _DrinksState();
+  DrinksState createState() => DrinksState();
 }
 
-class _DrinksState extends State<Drinks> {
+class DrinksState extends State<Drinks> {
   double _customIntake = 0;
   @override
   Widget build(BuildContext context) {
-    Future<void> _showCustomIntakeDialog() async {
+    Future<void> showCustomIntakeDialog() async {
       return showDialog<void>(
           context: context,
           barrierDismissible: false, // user must tap button!
@@ -138,7 +138,7 @@ class _DrinksState extends State<Drinks> {
                     IconButton(
                       icon: const Icon(Icons.bathtub),
                       onPressed: () async {
-                        await _showCustomIntakeDialog();
+                        await showCustomIntakeDialog();
                         user.addWaterIntake(_customIntake);
                       },
                     ),
