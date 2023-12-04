@@ -5,7 +5,7 @@ import 'package:princess_journey/models/user.dart';
 import '../i18n.dart';
 
 class Achievements extends StatefulWidget {
-  const Achievements({Key? key}) : super(key: key);
+  const Achievements({super.key});
 
   @override
   AchievementsState createState() => AchievementsState();

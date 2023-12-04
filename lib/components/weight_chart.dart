@@ -1,6 +1,6 @@
 import 'dart:math';
-
-import 'package:charts_flutter_new/flutter.dart' as charts;
+import 'package:community_charts_flutter/community_charts_flutter.dart'
+    as charts;
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:princess_journey/models/user.dart';
@@ -8,7 +8,7 @@ import 'package:princess_journey/models/user.dart';
 import '../i18n.dart';
 
 class WeightChart extends StatefulWidget {
-  const WeightChart({Key? key, required this.height}) : super(key: key);
+  const WeightChart({super.key, required this.height});
   final double height;
   @override
   WeightChartState createState() => WeightChartState();

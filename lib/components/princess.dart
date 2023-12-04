@@ -5,7 +5,7 @@ import 'package:princess_journey/models/user.dart';
 import '../i18n.dart';
 
 class Princess extends StatefulWidget {
-  const Princess({Key? key}) : super(key: key);
+  const Princess({super.key});
 
   @override
   PrincessState createState() => PrincessState();
@@ -31,6 +31,7 @@ class PrincessState extends State<Princess> {
             : CDateTime.now(),
         lastDate: CDateTime.now().add(const Duration(days: 1)),
       );
+      if (!mounted) return;
       if (date != null) {
         final TimeOfDay? picked = await showTimePicker(
           context: context,

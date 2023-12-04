@@ -9,7 +9,7 @@ import 'package:princess_journey/models/user.dart';
 import '../i18n.dart';
 
 class You extends StatefulWidget {
-  const You({Key? key}) : super(key: key);
+  const You({super.key});
 
   @override
   YouState createState() => YouState();

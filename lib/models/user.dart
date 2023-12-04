@@ -411,14 +411,13 @@ class Measurement extends Serialisable {
 }
 
 class Weight extends Measurement {
-  Weight(int userId, DateTime date, double value) : super(userId, date, value);
-  Weight.fromJson(Map<String, dynamic> json) : super.fromJson(json);
+  Weight(super.userId, super.date, super.value);
+  Weight.fromJson(super.json) : super.fromJson();
 }
 
 class WaterIntake extends Measurement {
-  WaterIntake(int userId, DateTime date, double value)
-      : super(userId, date, value);
-  WaterIntake.fromJson(Map<String, dynamic> json) : super.fromJson(json);
+  WaterIntake(super.userId, super.date, super.value);
+  WaterIntake.fromJson(super.json) : super.fromJson();
 }
 
 class FastingPeriod extends Serialisable {

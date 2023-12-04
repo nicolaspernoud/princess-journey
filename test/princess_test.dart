@@ -1,12 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:path_provider_platform_interface/path_provider_platform_interface.dart';
 import 'package:princess_journey/i18n.dart';
 import 'package:provider/provider.dart';
 
 import 'package:princess_journey/models/user.dart';
 import 'package:princess_journey/components/princess.dart';
 
+import 'path_provider_mock.dart';
+
 Future<void> main() async {
+  setUp(() async {
+    PathProviderPlatform.instance = FakePathProviderPlatform();
+  });
   // Freeze time
   CDateTime.customTime = DateTime(2021, 01, 28, 12, 0);
   DateTime start = CDateTime.now();
@@ -50,7 +56,7 @@ Future<void> main() async {
     await tester.pump();
     center = tester
         .getCenter(find.byKey(const ValueKey<String>('time-picker-dial')));
-    await tester.tapAt(Offset(center.dx + 10, center.dy));
+    await tester.tapAt(Offset(center.dx, center.dy + 95));
     await tester.tap(find.text("OK"));
     expect(u.fastingPeriods.length, 1);
     expect(u.activeFastingPeriod!.duration, 18);
@@ -73,7 +79,7 @@ Future<void> main() async {
     await tester.tapAt(Offset(center.dx, center.dy));
     await tester.tap(find.text("OK"));
     await tester.pump();
-    await tester.tap(find.text("CANCEL"));
+    await tester.tap(find.text("Cancel"));
     await tester.pump();
     expect(u.fastingPeriods.length, 1);
     expect(u.activeFastingPeriod!.duration, 18);
@@ -89,7 +95,7 @@ Future<void> main() async {
     await tester.pump();
     await tester.tap(find.text("OK"));
     await tester.pump();
-    await tester.tap(find.text("CANCEL"));
+    await tester.tap(find.text("Cancel"));
     await tester.pump();
     expect(u.fastingPeriods.length, 1);
     expect(u.activeFastingPeriod!.duration, 18);
@@ -137,7 +143,7 @@ Future<void> main() async {
     await tester.pump();
     center = tester
         .getCenter(find.byKey(const ValueKey<String>('time-picker-dial')));
-    await tester.tapAt(Offset(center.dx + 10, center.dy + 10));
+    await tester.tapAt(Offset(center.dx - 95, center.dy));
     await tester.tap(find.text("OK"));
     expect(u.fastingPeriods.length, 1);
     expect(u.activeFastingPeriod!.duration, 21);
@@ -190,7 +196,7 @@ Future<void> main() async {
     await tester.pump();
     center = tester
         .getCenter(find.byKey(const ValueKey<String>('time-picker-dial')));
-    await tester.tapAt(Offset(center.dx + 10, center.dy));
+    await tester.tapAt(Offset(center.dx, center.dy + 95));
     await tester.tap(find.text("OK"));
     expect(u.fastingPeriods.length, 2);
     expect(u.activeFastingPeriod!.duration, 18);
@@ -214,7 +220,7 @@ Future<void> main() async {
     await tester.pump();
     center = tester
         .getCenter(find.byKey(const ValueKey<String>('time-picker-dial')));
-    await tester.tapAt(Offset(center.dx + 10, center.dy));
+    await tester.tapAt(Offset(center.dx, center.dy + 95));
     await tester.tap(find.text("OK"));
     expect(u.fastingPeriods.length, 3);
     expect(u.activeFastingPeriod!.duration, 18);
@@ -233,7 +239,7 @@ Future<void> main() async {
     await tester.pump();
     center = tester
         .getCenter(find.byKey(const ValueKey<String>('time-picker-dial')));
-    await tester.tapAt(Offset(center.dx + 10, center.dy));
+    await tester.tapAt(Offset(center.dx, center.dy + 95));
     await tester.tap(find.text("OK"));
     expect(u.fastingPeriods.length, 3);
     expect(u.activeFastingPeriod!.duration, 18);

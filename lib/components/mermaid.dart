@@ -5,7 +5,7 @@ import 'package:princess_journey/models/user.dart';
 import '../i18n.dart';
 
 class Mermaid extends StatefulWidget {
-  const Mermaid({Key? key}) : super(key: key);
+  const Mermaid({super.key});
 
   @override
   MermaidState createState() => MermaidState();
@@ -46,7 +46,7 @@ class MermaidState extends State<Mermaid> {
 }
 
 class Drinks extends StatefulWidget {
-  const Drinks({Key? key}) : super(key: key);
+  const Drinks({super.key});
 
   @override
   DrinksState createState() => DrinksState();

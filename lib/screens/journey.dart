@@ -9,7 +9,7 @@ import 'package:pretty_gauge/pretty_gauge.dart';
 import '../i18n.dart';
 
 class Journey extends StatefulWidget {
-  const Journey({Key? key}) : super(key: key);
+  const Journey({super.key});
 
   @override
   JourneyState createState() => JourneyState();

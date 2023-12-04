@@ -1,12 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:path_provider_platform_interface/path_provider_platform_interface.dart';
 import 'package:princess_journey/i18n.dart';
 import 'package:provider/provider.dart';
 
 import 'package:princess_journey/models/user.dart';
 import 'package:princess_journey/components/mermaid.dart';
 
+import 'path_provider_mock.dart';
+
 Future<void> main() async {
+  setUp(() async {
+    PathProviderPlatform.instance = FakePathProviderPlatform();
+  });
   // Freeze time
   CDateTime.customTime = DateTime(2021, 01, 17);
 

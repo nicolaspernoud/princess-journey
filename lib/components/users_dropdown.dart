@@ -11,10 +11,10 @@ class UsersDropdown extends StatefulWidget {
   final IntCallback callback;
   final int initialIndex;
   const UsersDropdown({
-    Key? key,
+    super.key,
     required this.callback,
     required this.initialIndex,
-  }) : super(key: key);
+  });
 
   @override
   UsersDropdownState createState() => UsersDropdownState();

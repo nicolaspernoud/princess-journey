@@ -4,11 +4,17 @@ import 'dart:convert';
 
 import 'package:flutter/src/foundation/change_notifier.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:path_provider_platform_interface/path_provider_platform_interface.dart';
 import 'package:princess_journey/models/user.dart';
+
+import 'path_provider_mock.dart';
 
 class _MyHttpOverrides extends HttpOverrides {}
 
 void main() {
+  setUp(() async {
+    PathProviderPlatform.instance = FakePathProviderPlatform();
+  });
   TestWidgetsFlutterBinding.ensureInitialized();
   HttpOverrides.global = _MyHttpOverrides();
 
