@@ -10,7 +10,7 @@ import 'package:http/http.dart';
 
 import 'package:path_provider/path_provider.dart';
 
-class User extends ChangeNotifier with Serialisable {
+class User extends ChangeNotifier implements Serialisable {
   // Periodic timer to update suscribers as time changes
   Timer? timer;
   late Persister _persister;
