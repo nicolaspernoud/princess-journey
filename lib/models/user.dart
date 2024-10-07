@@ -642,13 +642,13 @@ class APIPersister extends Persister {
 
   String getRouteFromObject(dynamic object) {
     switch (object.runtimeType) {
-      case User:
+      case User _:
         return 'users';
-      case Weight:
+      case Weight _:
         return 'weights';
-      case WaterIntake:
+      case WaterIntake _:
         return 'water_intakes';
-      case FastingPeriod:
+      case FastingPeriod _:
         return 'fasting_periods';
       default:
         return 'unknown';
