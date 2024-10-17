@@ -641,7 +641,7 @@ class APIPersister extends Persister {
   }
 
   String getRouteFromObject(dynamic object) {
-    switch (object.runtimeType) {
+    switch (object) {
       case User _:
         return 'users';
       case Weight _:

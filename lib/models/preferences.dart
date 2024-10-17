@@ -119,7 +119,7 @@ mixin LocalFilePersister {
     if (kIsWeb) {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       String? contents = prefs.getString("settings");
-      fromJson(contents!);
+      if (contents != null) fromJson(contents);
     } else {
       try {
         final file = await localFile;
