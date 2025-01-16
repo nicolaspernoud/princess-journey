@@ -17,7 +17,7 @@ pub async fn user_test(
         .insert_header(("Authorization", "Bearer 0101"))
         .uri("/api/users")
         .to_request();
-    test::call_service(&mut app, req).await;
+    test::call_service(&app, req).await;
 
     // Check that using the wrong token gives an unauthorized error
     let req = test::TestRequest::with_uri("/api/users")
@@ -81,7 +81,7 @@ pub async fn user_test(
     let idw1 = do_test_extract_id!(
         app,
         Method::POST,
-        &format!("/api/weights"),
+        "/api/weights",
         &format!(r#"{{"user_id":{id},"date":"2022-02-06T00:00:00.000","value":60.0}}"#),
         StatusCode::CREATED,
         r#"{"id":"#
@@ -89,7 +89,7 @@ pub async fn user_test(
     let idw2 = do_test_extract_id!(
         app,
         Method::POST,
-        &format!("/api/weights"),
+        "/api/weights",
         &format!(r#"{{"user_id":{id},"date":"2022-02-16T00:00:00.000","value":57.0}}"#),
         StatusCode::CREATED,
         r#"{"id":"#
@@ -99,7 +99,7 @@ pub async fn user_test(
     let idwi1 = do_test_extract_id!(
         app,
         Method::POST,
-        &format!("/api/water_intakes"),
+        "/api/water_intakes",
         &format!(r#"{{"user_id":{id},"date":"2022-02-06T00:00:00.000","value":100.0}}"#),
         StatusCode::CREATED,
         r#"{"id":"#
@@ -107,7 +107,7 @@ pub async fn user_test(
     let idwi2 = do_test_extract_id!(
         app,
         Method::POST,
-        &format!("/api/water_intakes"),
+        "/api/water_intakes",
         &format!(r#"{{"user_id":{id},"date":"2022-02-07T00:00:00.000","value":200.0}}"#),
         StatusCode::CREATED,
         r#"{"id":"#
@@ -117,7 +117,7 @@ pub async fn user_test(
     let idfp1 = do_test_extract_id!(
         app,
         Method::POST,
-        &format!("/api/fasting_periods"),
+        "/api/fasting_periods",
         &format!(
             r#"{{"user_id":{id},"start":"2022-02-06T13:32:52.899630","duration":12,"closed":false}}"#
         ),
@@ -127,7 +127,7 @@ pub async fn user_test(
     let idfp2 = do_test_extract_id!(
         app,
         Method::POST,
-        &format!("/api/fasting_periods"),
+        "/api/fasting_periods",
         &format!(
             r#"{{"user_id":{id},"start":"2022-02-07T13:32:52.899630","duration":12,"closed":false}}"#
         ),
@@ -228,7 +228,7 @@ pub async fn user_test(
         .insert_header(("Authorization", "Bearer 0101"))
         .uri("/api/users")
         .to_request();
-    test::call_service(&mut app, req).await;
+    test::call_service(&app, req).await;
 
     // Create two users and get them all
     let id1 = do_test_extract_id!(

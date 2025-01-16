@@ -92,9 +92,9 @@ pub async fn read(
         };
         Ok(OutUser {
             user: u,
-            weights: weights,
-            fasting_periods: fasting_periods,
-            water_intakes: water_intakes,
+            weights,
+            fasting_periods,
+            water_intakes,
         })
     })
     .await?

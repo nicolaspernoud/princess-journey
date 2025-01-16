@@ -5,7 +5,7 @@ macro_rules! crud_use {
         use diesel::prelude::*;
         use diesel::r2d2::ConnectionManager;
         type DbPool = r2d2::Pool<ConnectionManager<SqliteConnection>>;
-        use crate::errors::ServerError;
+        use $crate::errors::ServerError;
     };
 }
 
@@ -19,7 +19,7 @@ macro_rules! crud_read {
         ) -> Result<HttpResponse, ServerError> {
             let mut conn = pool.get()?;
             let object = web::block(move || {
-                use crate::schema::$table::dsl::*;
+                use $crate::schema::$table::dsl::*;
                 $table.filter(id.eq(*oid)).first::<$model>(&mut conn)
             })
             .await??;
@@ -35,7 +35,7 @@ macro_rules! crud_read_all {
         pub async fn read_all(pool: web::Data<DbPool>) -> Result<HttpResponse, ServerError> {
             let mut conn = pool.get()?;
             let object = web::block(move || {
-                use crate::schema::$table::dsl::*;
+                use $crate::schema::$table::dsl::*;
                 $table.order(id.asc()).load::<$model>(&mut conn)
             })
             .await??;
@@ -56,9 +56,9 @@ macro_rules! crud_create {
             let created_o: Result<$outmodel, ServerError> = web::block(move || {
                 $(
                     // Check that parent for our object exists
-                    crate::schema::$parent_table::dsl::$parent_table.find(o.$parent_table_id).first::<$parent_model>(&mut conn)?;
+                    $crate::schema::$parent_table::dsl::$parent_table.find(o.$parent_table_id).first::<$parent_model>(&mut conn)?;
                 )*
-                use crate::schema::$table::dsl::*;
+                use $crate::schema::$table::dsl::*;
                 diesel::insert_into($table)
                     .values(&*o)
                     .execute(&mut conn)?;
@@ -84,9 +84,9 @@ macro_rules! crud_update {
             let put_o: Result<$model, ServerError> = web::block(move || {
                 $(
                     // Check that parent for our object exists
-                    crate::schema::$parent_table::dsl::$parent_table.find(o.$parent_table_id).first::<$parent_model>(&mut conn)?;
+                    $crate::schema::$parent_table::dsl::$parent_table.find(o.$parent_table_id).first::<$parent_model>(&mut conn)?;
                 )*
-                use crate::schema::$table::dsl::*;
+                use $crate::schema::$table::dsl::*;
 
                 diesel::update($table)
                     .filter(id.eq(*oid))
@@ -112,7 +112,7 @@ macro_rules! crud_delete {
             let mut conn = pool.get()?;
             let oid = *oid;
             web::block(move || {
-                use crate::schema::$table::dsl::*;
+                use $crate::schema::$table::dsl::*;
                 let deleted = diesel::delete($table)
                     .filter(id.eq(oid))
                     .execute(&mut conn)?;
@@ -134,7 +134,7 @@ macro_rules! crud_delete_all {
         pub async fn delete_all(pool: web::Data<DbPool>) -> Result<HttpResponse, ServerError> {
             let mut conn = pool.get()?;
             web::block(move || {
-                use crate::schema::$table::dsl::*;
+                use $crate::schema::$table::dsl::*;
                 let deleted = diesel::delete($table).execute(&mut conn)?;
                 match deleted {
                     0 => Err(diesel::result::Error::NotFound),

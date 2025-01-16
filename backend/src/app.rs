@@ -31,7 +31,7 @@ pub async fn validator(
 #[macro_export]
 macro_rules! create_app {
     ($pool:expr, $app_data:expr) => {{
-        use crate::models::{fasting_period, user, water_intake, weight};
+        use $crate::models::{fasting_period, user, water_intake, weight};
         use actix_cors::Cors;
         use actix_web::{error, middleware, web, web::Data, App, HttpResponse};
         use actix_web_httpauth::middleware::HttpAuthentication;
@@ -51,7 +51,7 @@ macro_rules! create_app {
             .wrap(middleware::Logger::default())
             .service(
                 web::scope("/api/users")
-                    .wrap(HttpAuthentication::bearer(crate::app::validator))
+                    .wrap(HttpAuthentication::bearer($crate::app::validator))
                     .service(user::read_all)
                     .service(user::read)
                     .service(user::create)
@@ -61,7 +61,7 @@ macro_rules! create_app {
             )
             .service(
                 web::scope("/api/weights")
-                    .wrap(HttpAuthentication::bearer(crate::app::validator))
+                    .wrap(HttpAuthentication::bearer($crate::app::validator))
                     .service(weight::read_all)
                     .service(weight::read)
                     .service(weight::create)
@@ -71,7 +71,7 @@ macro_rules! create_app {
             )
             .service(
                 web::scope("/api/water_intakes")
-                    .wrap(HttpAuthentication::bearer(crate::app::validator))
+                    .wrap(HttpAuthentication::bearer($crate::app::validator))
                     .service(water_intake::read_all)
                     .service(water_intake::read)
                     .service(water_intake::create)
@@ -81,7 +81,7 @@ macro_rules! create_app {
             )
             .service(
                 web::scope("/api/fasting_periods")
-                    .wrap(HttpAuthentication::bearer(crate::app::validator))
+                    .wrap(HttpAuthentication::bearer($crate::app::validator))
                     .service(fasting_period::read_all)
                     .service(fasting_period::read)
                     .service(fasting_period::create)
