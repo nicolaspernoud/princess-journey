@@ -30,9 +30,8 @@ class WeightChartState extends State<WeightChart> {
 
       final staticTicks = <charts.TickSpec<double>>[
         charts.TickSpec(
-            (min(user.lesserWeight, user.targetWeight) / 5).floor().toDouble() *
-                5),
-        charts.TickSpec((user.greaterWeight / 5).ceil().toDouble() * 5),
+            (min(user.lesserWeight, user.targetWeight).floor().toDouble() - 1)),
+        charts.TickSpec(user.greaterWeight.ceil().toDouble() + 1),
       ];
 
       return SizedBox(

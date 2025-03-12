@@ -1,6 +1,6 @@
 #[macro_export]
 macro_rules! do_test {
-    ($app:expr, $method:expr, $uri:expr, $payload:expr, $expected_status_code:expr, $body_expect_to_start_with:expr) => {{
+    ($app:expr_2021, $method:expr_2021, $uri:expr_2021, $payload:expr_2021, $expected_status_code:expr_2021, $body_expect_to_start_with:expr_2021) => {{
         let serialized: String;
         let ptype = $crate::tester::type_of($payload);
         println!("Payload type: {}", ptype);
@@ -28,7 +28,7 @@ macro_rules! do_test {
 
 #[macro_export]
 macro_rules! do_test_extract_id {
-    ($app:expr, $method:expr, $uri:expr, $payload:expr, $expected_status_code:expr, $body_expect_to_start_with:expr) => {{
+    ($app:expr_2021, $method:expr_2021, $uri:expr_2021, $payload:expr_2021, $expected_status_code:expr_2021, $body_expect_to_start_with:expr_2021) => {{
         use regex::Regex;
         let body = do_test!(
             $app,

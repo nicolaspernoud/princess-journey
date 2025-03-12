@@ -40,9 +40,4 @@ joinable!(fasting_periods -> users (user_id));
 joinable!(water_intakes -> users (user_id));
 joinable!(weights -> users (user_id));
 
-allow_tables_to_appear_in_same_query!(
-    fasting_periods,
-    users,
-    water_intakes,
-    weights,
-);
+allow_tables_to_appear_in_same_query!(fasting_periods, users, water_intakes, weights,);

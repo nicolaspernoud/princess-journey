@@ -1,5 +1,5 @@
 use actix_web::error::{self};
-use actix_web::{dev::ServiceRequest, Error};
+use actix_web::{Error, dev::ServiceRequest};
 use actix_web_httpauth::extractors::bearer::BearerAuth;
 
 pub struct AppConfig {
@@ -30,11 +30,11 @@ pub async fn validator(
 
 #[macro_export]
 macro_rules! create_app {
-    ($pool:expr, $app_data:expr) => {{
-        use $crate::models::{fasting_period, user, water_intake, weight};
+    ($pool:expr_2021, $app_data:expr_2021) => {{
         use actix_cors::Cors;
-        use actix_web::{error, middleware, web, web::Data, App, HttpResponse};
+        use actix_web::{App, HttpResponse, error, middleware, web, web::Data};
         use actix_web_httpauth::middleware::HttpAuthentication;
+        use $crate::models::{fasting_period, user, water_intake, weight};
 
         App::new()
             .app_data(Data::new($pool.clone()))

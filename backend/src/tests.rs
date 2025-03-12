@@ -5,9 +5,10 @@ mod tests {
     use crate::{app::AppConfig, models::user_tests::user_test};
     #[actix_rt::test]
     async fn test_models() {
-        use diesel::r2d2::{self, ConnectionManager};
         use diesel::SqliteConnection;
-        std::env::set_var("RUST_LOG", "debug");
+        use diesel::r2d2::{self, ConnectionManager};
+        // TODO: Audit that the environment access only happens in single-threaded code.
+        unsafe { std::env::set_var("RUST_LOG", "debug") };
         env_logger::init();
         use diesel_migrations::{EmbeddedMigrations, MigrationHarness};
 
