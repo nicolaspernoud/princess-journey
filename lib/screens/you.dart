@@ -89,19 +89,30 @@ class YouState extends State<You> {
                     }
                   },
                 ),
-                TextFormField(
-                  controller: _weightController,
-                  decoration: InputDecoration(
-                      labelText:
-                          MyLocalizations.of(context)!.tr("your_weight_kg")),
-                  keyboardType: TextInputType.number,
-                  inputFormatters: <TextInputFormatter>[
-                    FilteringTextInputFormatter.allow(doubleOnly)
-                  ],
-                  onChanged: (text) {
-                    var value = double.tryParse(text);
+                Focus(
+                  child: TextFormField(
+                      controller: _weightController,
+                      decoration: InputDecoration(
+                          labelText: MyLocalizations.of(context)!
+                              .tr("your_weight_kg")),
+                      keyboardType: TextInputType.number,
+                      inputFormatters: <TextInputFormatter>[
+                        FilteringTextInputFormatter.allow(doubleOnly)
+                      ]),
+                  onFocusChange: (focus) {
+                    if (focus == true) return;
+                    var value = double.tryParse(_weightController!.text);
                     if (value != null) {
-                      user.weight = value;
+                      if (user.weight == 0 ||
+                          (value > user.weight / 2 &&
+                              value < user.weight * 2)) {
+                        user.weight = value;
+                      } else {
+                        _weightController!.text = user.weight.toString();
+                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                            content: Text(MyLocalizations.of(context)!
+                                .tr("weight_is_too_different"))));
+                      }
                     }
                   },
                 ),

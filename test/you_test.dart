@@ -29,8 +29,14 @@ Future<void> main() async {
     // Build our app and trigger a frame
     await tester.pumpWidget(ChangeNotifierProvider.value(
       value: u,
-      child: const MaterialApp(
-        home: Scaffold(body: You()),
+      child: MaterialApp(
+        home: Scaffold(
+            body: Column(children: [
+          Expanded(child: You()),
+          Focus(
+            child: TextField(key: Key('otherTextField')),
+          ),
+        ])),
         localizationsDelegates: [
           MyLocalizationsDelegate(),
         ],
@@ -80,11 +86,15 @@ Future<void> main() async {
     expect(u.height, 170);
     // Check that updating the weight updates the user
     await tester.enterText(find.text("60.0"), '61');
+    await tester.tap(
+        find.byKey(const Key('otherTextField'))); // Tap outside the TextField
     await tester.pump();
     expect(find.text('61'), findsOneWidget);
     expect(u.weight, 61.0);
     // Check that the weight field does not accept anything
     await tester.enterText(find.text("61"), 'aaa');
+    await tester.tap(
+        find.byKey(const Key('otherTextField'))); // Tap outside the TextField
     await tester.pump();
     expect(u.weight, 61.0);
     // Check that updating the target weight updates the user

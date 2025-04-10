@@ -75,7 +75,8 @@ class PrincessState extends State<Princess> {
                         : 12,
                     divisions: 24 - startValue.round(),
                     max: 24,
-                    label: duration.toString(),
+                    label: MyLocalizations.of(context)!.fastingHoursEnd(
+                        DateTime.now().add(Duration(hours: duration.toInt()))),
                     onChanged: (double value) {
                       setState(() {
                         duration = value;

@@ -107,9 +107,9 @@ class User extends ChangeNotifier implements Serialisable {
   // Weight
   var _weights = <Weight>[];
 
-  set weight(v) {
+  set weight(double v) {
     Weight w;
-    if (v == 0) return;
+    if (v == 0.0) return;
     if (_weights.isNotEmpty && _weights.last.date == _today()) {
       w = _weights.last;
       w.value = v;

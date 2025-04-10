@@ -179,6 +179,8 @@ void main() {
       user.targetWeight = 50.0;
       user.setFastingPeriod(10, CDateTime.now());
       user.addWaterIntake(100.0);
+      // Allow for file closure
+      await Future.delayed(Duration(seconds: 1));
       await user.read();
     }, [
       (User user) => user.gender,
