@@ -17,15 +17,15 @@ class App {
     return prefs.token != "";
   }
 
-  log(String v) async {
+  Future<void> log(String v) async {
     await prefs.addToLog(v);
   }
 
-  getLog() {
+  List<String> getLog() {
     return prefs.log;
   }
 
-  clearLog() {
+  void clearLog() {
     prefs.clearLog();
   }
 

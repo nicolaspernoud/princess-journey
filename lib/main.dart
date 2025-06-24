@@ -15,7 +15,7 @@ import 'i18n.dart';
 
 User u = User(id: 0, hasTimer: true);
 
-main() async {
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   if (!kIsWeb) {
     Workmanager().initialize(callbackDispatcher, isInDebugMode: false);
@@ -214,7 +214,7 @@ void callbackDispatcher() {
 }
 
 Future _showNotificationWithDefaultSound(
-    flip, String title, String message) async {
+    FlutterLocalNotificationsPlugin flip, String title, String message) async {
   var androidPlatformChannelSpecifics = const AndroidNotificationDetails(
       'princess-journey-id', 'princess-journey',
       channelDescription: 'princess-journey-channel',

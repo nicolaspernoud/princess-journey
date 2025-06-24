@@ -40,12 +40,12 @@ class User extends ChangeNotifier implements Serialisable {
     _persister = p;
   }
 
-  persistAndNotify(Serialisable? child) async {
+  Future<void> persistAndNotify(Serialisable? child) async {
     await _persister.write(this, child);
     notifyListeners();
   }
 
-  read() async {
+  Future<void> read() async {
     try {
       // ignore: unnecessary_this
       this.fromJson(await _persister.read(this)!);
@@ -55,11 +55,11 @@ class User extends ChangeNotifier implements Serialisable {
     notifyListeners();
   }
 
-  write() async {
+  Future<void> write() async {
     _persister.write(this, null);
   }
 
-  startTimer() {
+  void startTimer() {
     notifyListeners();
     if (timer == null || !timer!.isActive) {
       timer = Timer.periodic(const Duration(seconds: 5), (Timer t) {
@@ -68,7 +68,7 @@ class User extends ChangeNotifier implements Serialisable {
     }
   }
 
-  stopTimer() {
+  void stopTimer() {
     timer!.cancel();
   }
 
@@ -172,7 +172,7 @@ class User extends ChangeNotifier implements Serialisable {
   // Water intake
   var _waterIntakes = <WaterIntake>[];
 
-  addWaterIntake(double w) {
+  void addWaterIntake(double w) {
     WaterIntake wi;
     if (_waterIntakes.isNotEmpty && _waterIntakes.last.date == _today()) {
       wi = _waterIntakes.last;
@@ -218,7 +218,7 @@ class User extends ChangeNotifier implements Serialisable {
   // Fasting
   var _fastingPeriods = <FastingPeriod>[];
 
-  setFastingPeriod(int v, [DateTime? start]) {
+  void setFastingPeriod(int v, [DateTime? start]) {
     FastingPeriod fp;
     if (activeFastingPeriod != null) {
       fp = activeFastingPeriod!;
@@ -244,7 +244,7 @@ class User extends ChangeNotifier implements Serialisable {
     return _fastingPeriods.last;
   }
 
-  closeActiveFastingPeriod() {
+  void closeActiveFastingPeriod() {
     var ap = activeFastingPeriod;
     if (ap != null) {
       ap.close();
@@ -253,7 +253,7 @@ class User extends ChangeNotifier implements Serialisable {
   }
 
   // Failing a fasting period means removing it
-  failActiveFastingPeriod() {
+  void failActiveFastingPeriod() {
     if (activeFastingPeriod != null) {
       _persister.remove(this, activeFastingPeriod);
       _fastingPeriods.removeLast();
@@ -435,7 +435,7 @@ class FastingPeriod extends Serialisable {
 
   bool get closed => _closed;
 
-  close() {
+  void close() {
     if (ended) {
       _closed = true;
     } else {
@@ -473,20 +473,20 @@ class FastingPeriodNotEndedException implements Exception {
 }
 
 abstract class Serialisable {
-  fromJson(Map<String, dynamic> map) {}
+  void fromJson(Map<String, dynamic> map) {}
   int id = 0;
   Map<String, dynamic> toJson();
 }
 
 abstract class Persister {
   Future<Map<String, dynamic>>? read(Serialisable parent);
-  write(Serialisable parent, Serialisable? child);
+  Future<void> write(Serialisable parent, Serialisable? child);
   void remove(Serialisable parent, Serialisable? child);
 }
 
 class FilePersister extends Persister {
   final String _fileName;
-  FilePersister({fileName = "user.json"}) : _fileName = fileName;
+  FilePersister({String fileName = "user.json"}) : _fileName = fileName;
 
   Future<File> getLocalFile() async {
     if (Platform.isAndroid) {

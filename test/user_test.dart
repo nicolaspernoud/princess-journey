@@ -248,7 +248,7 @@ void main() {
       );
       String contents =
           '{"id":1,"_gender":2,"_height":170,"_weights":[{"id":1,"user_id":1,"date":"2022-02-07T00:00:00.000","value":60.0},{"id":2,"user_id":1,"date":"2022-02-07T00:00:00.000","value":60.0},{"id":3,"user_id":1,"date":"2022-02-07T00:00:00.000","value":60.0}],"_targetWeight":55.0,"_dailyWaterTarget":1000.0,"_waterIntakes":[{"id":1,"user_id":1,"date":"2022-02-07T00:00:00.000","value":120.0}],"_fastingPeriods":[{"id":1,"user_id":1,"start":"2022-02-07T15:37:49.569792","duration":12,"closed":false}]}';
-      await user.fromJson(jsonDecode(contents));
+      user.fromJson(jsonDecode(contents));
       // Check that the user is correctly hydrated
       CDateTime.customTime = DateTime.parse("2021-01-14T17:32:43.973580");
       expectPersistence(user);
