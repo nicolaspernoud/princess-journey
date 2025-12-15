@@ -35,52 +35,53 @@ class YouState extends State<You> {
   @override
   Widget build(BuildContext context) {
     return Card(
-        child: Padding(
-            padding: const EdgeInsets.all(20),
-            child: Consumer<User>(builder: (context, user, child) {
-              _heightController ??=
-                  TextEditingController(text: emptyIfZero(user.height));
-              _weightController ??=
-                  TextEditingController(text: emptyIfZero(user.weight));
-              _targetWeightController ??=
-                  TextEditingController(text: emptyIfZero(user.targetWeight));
+      child: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Consumer<User>(
+          builder: (context, user, child) {
+            _heightController ??= TextEditingController(
+              text: emptyIfZero(user.height),
+            );
+            _weightController ??= TextEditingController(
+              text: emptyIfZero(user.weight),
+            );
+            _targetWeightController ??= TextEditingController(
+              text: emptyIfZero(user.targetWeight),
+            );
 
-              return ListView(children: <Widget>[
+            return ListView(
+              children: <Widget>[
                 ListTile(
-                    leading: const Icon(Icons.person),
-                    title: Text(MyLocalizations.of(context)!.tr("tell_us"))),
-                Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(MyLocalizations.of(context)!.tr("your_gender")),
-                    RadioListTile(
-                      title: Text(MyLocalizations.of(context)!.tr("male")),
-                      value: Gender.male,
-                      groupValue: user.gender,
-                      onChanged: (Gender? value) {
-                        user.gender = value!;
-                      },
-                    ),
-                    RadioListTile(
-                      title: Text(MyLocalizations.of(context)!.tr("female")),
-                      value: Gender.female,
-                      groupValue: user.gender,
-                      onChanged: (Gender? value) {
-                        setState(() {
-                          user.gender = value!;
-                        });
-                      },
-                    ),
-                  ],
+                  leading: const Icon(Icons.person),
+                  title: Text(MyLocalizations.of(context)!.tr("tell_us")),
+                ),
+                RadioGroup<Gender>(
+                  groupValue: user.gender,
+                  onChanged: (Gender? value) {
+                    user.gender = value!;
+                  },
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      ListTile(
+                        title: Text(MyLocalizations.of(context)!.tr("male")),
+                        leading: Radio<Gender>(value: Gender.male),
+                      ),
+                      ListTile(
+                        title: Text(MyLocalizations.of(context)!.tr("female")),
+                        leading: Radio<Gender>(value: Gender.female),
+                      ),
+                    ],
+                  ),
                 ),
                 TextFormField(
                   controller: _heightController,
                   decoration: InputDecoration(
-                      labelText:
-                          MyLocalizations.of(context)!.tr("your_height")),
+                    labelText: MyLocalizations.of(context)!.tr("your_height"),
+                  ),
                   keyboardType: TextInputType.number,
                   inputFormatters: <TextInputFormatter>[
-                    FilteringTextInputFormatter.allow(intOnly)
+                    FilteringTextInputFormatter.allow(intOnly),
                   ],
                   onChanged: (text) {
                     var value = int.tryParse(text);
@@ -91,14 +92,17 @@ class YouState extends State<You> {
                 ),
                 Focus(
                   child: TextFormField(
-                      controller: _weightController,
-                      decoration: InputDecoration(
-                          labelText: MyLocalizations.of(context)!
-                              .tr("your_weight_kg")),
-                      keyboardType: TextInputType.number,
-                      inputFormatters: <TextInputFormatter>[
-                        FilteringTextInputFormatter.allow(doubleOnly)
-                      ]),
+                    controller: _weightController,
+                    decoration: InputDecoration(
+                      labelText: MyLocalizations.of(
+                        context,
+                      )!.tr("your_weight_kg"),
+                    ),
+                    keyboardType: TextInputType.number,
+                    inputFormatters: <TextInputFormatter>[
+                      FilteringTextInputFormatter.allow(doubleOnly),
+                    ],
+                  ),
                   onFocusChange: (focus) {
                     if (focus == true) return;
                     var value = double.tryParse(_weightController!.text);
@@ -109,9 +113,15 @@ class YouState extends State<You> {
                         user.weight = value;
                       } else {
                         _weightController!.text = user.weight.toString();
-                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                            content: Text(MyLocalizations.of(context)!
-                                .tr("weight_is_too_different"))));
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(
+                              MyLocalizations.of(
+                                context,
+                              )!.tr("weight_is_too_different"),
+                            ),
+                          ),
+                        );
                       }
                     }
                   },
@@ -119,11 +129,13 @@ class YouState extends State<You> {
                 TextFormField(
                   controller: _targetWeightController,
                   decoration: InputDecoration(
-                      labelText: MyLocalizations.of(context)!
-                          .tr("your_desired_weight")),
+                    labelText: MyLocalizations.of(
+                      context,
+                    )!.tr("your_desired_weight"),
+                  ),
                   keyboardType: TextInputType.number,
                   inputFormatters: <TextInputFormatter>[
-                    FilteringTextInputFormatter.allow(doubleOnly)
+                    FilteringTextInputFormatter.allow(doubleOnly),
                   ],
                   onChanged: (text) {
                     var value = double.tryParse(text);
@@ -134,8 +146,9 @@ class YouState extends State<You> {
                 ),
                 Row(
                   children: [
-                    Text(MyLocalizations.of(context)!
-                        .tr("your_daily_water_goal")),
+                    Text(
+                      MyLocalizations.of(context)!.tr("your_daily_water_goal"),
+                    ),
                     DropdownButton<int>(
                       value: user.dailyWaterTarget.toInt(),
                       items: <int>[1000, 1500, 2000, 2500].map((int value) {
@@ -150,25 +163,28 @@ class YouState extends State<You> {
                     ),
                   ],
                 ),
-                Row(children: [
-                  Text(MyLocalizations.of(context)!.tr("remote_storage")),
-                  Checkbox(
-                    value: App().prefs.remoteStorage,
-                    onChanged: (bool? value) async {
-                      if (value != null) {
-                        App().prefs.remoteStorage = value;
-                        await setRemoteStorage(user);
-                        setState((() {}));
-                      }
-                    },
-                  )
-                ]),
+                Row(
+                  children: [
+                    Text(MyLocalizations.of(context)!.tr("remote_storage")),
+                    Checkbox(
+                      value: App().prefs.remoteStorage,
+                      onChanged: (bool? value) async {
+                        if (value != null) {
+                          App().prefs.remoteStorage = value;
+                          await setRemoteStorage(user);
+                          setState((() {}));
+                        }
+                      },
+                    ),
+                  ],
+                ),
                 if (App().prefs.remoteStorage && (!kIsWeb || kDebugMode))
                   TextFormField(
                     initialValue: App().prefs.hostname,
                     // initialValue: App().prefs.hostname != "" ? App().prefs.hostname : "http://10.0.2.2:8080-",
                     decoration: InputDecoration(
-                        labelText: MyLocalizations.of(context)!.tr("hostname")),
+                      labelText: MyLocalizations.of(context)!.tr("hostname"),
+                    ),
                     onChanged: (text) async {
                       App().prefs.hostname = text;
                       await setRemoteStorage(user);
@@ -179,22 +195,28 @@ class YouState extends State<You> {
                     //initialValue: App().prefs.token != "" ? App().prefs.token : "token-",
                     initialValue: App().prefs.token,
                     decoration: InputDecoration(
-                        labelText: MyLocalizations.of(context)!.tr("token")),
+                      labelText: MyLocalizations.of(context)!.tr("token"),
+                    ),
                     onChanged: (text) async {
                       App().prefs.token = text;
                       await setRemoteStorage(user);
                     },
                   ),
                   UsersDropdown(
-                      key: ValueKey<Object>(redrawObject),
-                      initialIndex: App().prefs.userId,
-                      callback: (val) async {
-                        App().prefs.userId = val;
-                        await setRemoteStorage(user);
-                      })
-                ]
-              ]);
-            })));
+                    key: ValueKey<Object>(redrawObject),
+                    initialIndex: App().prefs.userId,
+                    callback: (val) async {
+                      App().prefs.userId = val;
+                      await setRemoteStorage(user);
+                    },
+                  ),
+                ],
+              ],
+            );
+          },
+        ),
+      ),
+    );
   }
 
   Future<void> setRemoteStorage(User user) async {

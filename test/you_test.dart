@@ -19,40 +19,41 @@ Future<void> main() async {
 
   // Create a new user
   User u = User(
-      id: 0,
-      gender: Gender.female,
-      height: 160,
-      weight: 60.0,
-      targetWeight: 55.0);
+    id: 0,
+    gender: Gender.female,
+    height: 160,
+    weight: 60.0,
+    targetWeight: 55.0,
+  );
   App().init();
   testWidgets('You tests', (WidgetTester tester) async {
     // Build our app and trigger a frame
-    await tester.pumpWidget(ChangeNotifierProvider.value(
-      value: u,
-      child: MaterialApp(
-        home: Scaffold(
-            body: Column(children: [
-          Expanded(child: You()),
-          Focus(
-            child: TextField(key: Key('otherTextField')),
+    await tester.pumpWidget(
+      ChangeNotifierProvider.value(
+        value: u,
+        child: MaterialApp(
+          home: Scaffold(
+            body: Column(
+              children: [
+                Expanded(child: You()),
+                Focus(child: TextField(key: Key('otherTextField'))),
+              ],
+            ),
           ),
-        ])),
-        localizationsDelegates: [
-          MyLocalizationsDelegate(),
-        ],
+          localizationsDelegates: [MyLocalizationsDelegate()],
+        ),
       ),
-    ));
+    );
 
     // Check that the male radio button is not checked
     expect(
-        find.byWidgetPredicate(
-          (Widget widget) =>
-              widget is RadioListTile &&
-              widget.value == Gender.male &&
-              widget.checked == false,
-          description: 'Unchecked male radio button',
-        ),
-        findsOneWidget);
+      find.byWidgetPredicate(
+        (Widget widget) =>
+            widget is RadioGroup && widget.groupValue != Gender.male,
+        description: 'Unchecked male radio button',
+      ),
+      findsOneWidget,
+    );
     // Check that the height field contains the correct height
     expect(find.text('160'), findsOneWidget);
     // Check that the weigh field contains the correct weight
@@ -60,20 +61,21 @@ Future<void> main() async {
     // Check that the target weight field contains the correct desired weight
     expect(find.text('55.0'), findsOneWidget);
     // Check that updating the gender updates the user
-    await tester.tap(find.byWidgetPredicate(
-      (Widget widget) => widget is RadioListTile && widget.value == Gender.male,
-      description: 'Checked female radio button',
-    ));
+    await tester.tap(
+      find.byWidgetPredicate(
+        (Widget widget) => widget is Radio && widget.value == Gender.male,
+        description: 'Checked female radio button',
+      ),
+    );
     await tester.pump();
     expect(
-        find.byWidgetPredicate(
-          (Widget widget) =>
-              widget is RadioListTile &&
-              widget.value == Gender.male &&
-              widget.checked == true,
-          description: 'Checked male radio button',
-        ),
-        findsOneWidget);
+      find.byWidgetPredicate(
+        (Widget widget) =>
+            widget is RadioGroup && widget.groupValue == Gender.male,
+        description: 'Checked male radio button',
+      ),
+      findsOneWidget,
+    );
     expect(u.gender, Gender.male);
     // Check that updating the height updates the user
     await tester.enterText(find.text("160"), '170');
@@ -87,14 +89,16 @@ Future<void> main() async {
     // Check that updating the weight updates the user
     await tester.enterText(find.text("60.0"), '61');
     await tester.tap(
-        find.byKey(const Key('otherTextField'))); // Tap outside the TextField
+      find.byKey(const Key('otherTextField')),
+    ); // Tap outside the TextField
     await tester.pump();
     expect(find.text('61'), findsOneWidget);
     expect(u.weight, 61.0);
     // Check that the weight field does not accept anything
     await tester.enterText(find.text("61"), 'aaa');
     await tester.tap(
-        find.byKey(const Key('otherTextField'))); // Tap outside the TextField
+      find.byKey(const Key('otherTextField')),
+    ); // Tap outside the TextField
     await tester.pump();
     expect(u.weight, 61.0);
     // Check that updating the target weight updates the user

@@ -20,7 +20,7 @@ class WaterIntakesChartState extends State<WaterIntakesChart> {
       final data = [
         charts.Series<Measurement, String>(
           id: 'Water intakes',
-          colorFn: (_, __) => charts.MaterialPalette.blue.shadeDefault,
+          colorFn: (_, _) => charts.MaterialPalette.blue.shadeDefault,
           domainFn: (Measurement m, _) => m.date.day.toString(),
           measureFn: (Measurement m, _) => m.value,
           data: user.waterIntakes.sublist(lsStart),

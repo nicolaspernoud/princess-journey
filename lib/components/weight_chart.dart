@@ -21,7 +21,7 @@ class WeightChartState extends State<WeightChart> {
       final data = [
         charts.Series<Measurement, DateTime>(
           id: 'Weight',
-          colorFn: (_, __) => charts.MaterialPalette.pink.shadeDefault,
+          colorFn: (_, _) => charts.MaterialPalette.pink.shadeDefault,
           domainFn: (Measurement m, _) => m.date,
           measureFn: (Measurement m, _) => m.value,
           data: user.weights,

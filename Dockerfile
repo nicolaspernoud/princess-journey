@@ -3,7 +3,7 @@
 # Stage 1 : Backend build #
 ###########################
 
-# build with `docker build $(cat versions.env | grep -v '^#' | xargs -I {} echo --build-arg {}) -t tinytickets .`
+# build with `docker build $(cat versions.env | grep -v '^#' | xargs -I {} echo --build-arg {}) -t princess_journey .`
 # Versions
 ARG RUST_VERSION
 ARG FLUTTER_VERSION

@@ -18,11 +18,11 @@ User u = User(id: 0, hasTimer: true);
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   if (!kIsWeb) {
-    Workmanager().initialize(callbackDispatcher, isInDebugMode: false);
+    Workmanager().initialize(callbackDispatcher);
     Workmanager().registerPeriodicTask("1", "updateAndManageNotifications",
         frequency: const Duration(minutes: 15),
         initialDelay: const Duration(seconds: 5),
-        existingWorkPolicy: ExistingWorkPolicy.replace,
+        existingWorkPolicy: ExistingPeriodicWorkPolicy.replace,
         inputData: {'locale': Platform.localeName.split("_")[0]});
   }
   await App().init();

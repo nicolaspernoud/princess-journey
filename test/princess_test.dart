@@ -19,22 +19,28 @@ Future<void> main() async {
 
   // Create a new user
   User u = User(
-      id: 0,
-      gender: Gender.female,
-      height: 160,
-      weight: 60.0,
-      targetWeight: 55.0);
+    id: 0,
+    gender: Gender.female,
+    height: 160,
+    weight: 60.0,
+    targetWeight: 55.0,
+  );
   testWidgets('Princess tests', (WidgetTester tester) async {
+    final Finder customPaintFinder = find.descendant(
+      of: find.byWidgetPredicate((Widget w) => '${w.runtimeType}' == '_Dial'),
+      matching: find.byType(CustomPaint),
+    );
+
     // Build our app and trigger a frame
-    await tester.pumpWidget(ChangeNotifierProvider.value(
-      value: u,
-      child: const MaterialApp(
-        home: Scaffold(body: Princess()),
-        localizationsDelegates: [
-          MyLocalizationsDelegate(),
-        ],
+    await tester.pumpWidget(
+      ChangeNotifierProvider.value(
+        value: u,
+        child: const MaterialApp(
+          home: Scaffold(body: Princess()),
+          localizationsDelegates: [MyLocalizationsDelegate()],
+        ),
       ),
-    ));
+    );
 
     // Check that the fasting period icon exists
     expect(find.byIcon(Icons.add_circle), findsOneWidget);
@@ -44,9 +50,12 @@ Future<void> main() async {
     await tester.pump();
     // Check that the slider is displayed
     expect(
-        find.byWidgetPredicate((Widget widget) =>
-            widget is Slider && widget.max == 24 && widget.min == 12),
-        findsOneWidget);
+      find.byWidgetPredicate(
+        (Widget widget) =>
+            widget is Slider && widget.max == 24 && widget.min == 12,
+      ),
+      findsOneWidget,
+    );
     // Create the fasting period
     var center = tester.getCenter(find.byType(Slider));
     await tester.tapAt(Offset(center.dx, center.dy));
@@ -54,8 +63,7 @@ Future<void> main() async {
     await tester.pump();
     await tester.tap(find.text("OK"));
     await tester.pump();
-    center = tester
-        .getCenter(find.byKey(const ValueKey<String>('time-picker-dial')));
+    center = tester.getCenter(customPaintFinder);
     await tester.tapAt(Offset(center.dx, center.dy + 95));
     await tester.tap(find.text("OK"));
     expect(u.fastingPeriods.length, 1);
@@ -104,45 +112,49 @@ Future<void> main() async {
 
     // Check that the CircularProgressIndicator displays correct value
     expect(
-        find.byWidgetPredicate(
-          (Widget widget) =>
-              widget is CircularProgressIndicator &&
-              widget.semanticsLabel == 'princess daily progress' &&
-              widget.value == 6 / 18,
-          description: 'princess daily progress with correct data value',
-        ),
-        findsOneWidget);
+      find.byWidgetPredicate(
+        (Widget widget) =>
+            widget is CircularProgressIndicator &&
+            widget.semanticsLabel == 'princess daily progress' &&
+            widget.value == 6 / 18,
+        description: 'princess daily progress with correct data value',
+      ),
+      findsOneWidget,
+    );
 
     // The daily fasting progress should follow the time
     CDateTime.customTime = start.add(const Duration(hours: 6));
     u.notifyListeners();
     await tester.pump();
     expect(
-        find.byWidgetPredicate(
-          (Widget widget) =>
-              widget is CircularProgressIndicator &&
-              widget.semanticsLabel == 'princess daily progress' &&
-              widget.value == 12 / 18,
-          description: 'princess daily progress with half data value',
-        ),
-        findsOneWidget);
+      find.byWidgetPredicate(
+        (Widget widget) =>
+            widget is CircularProgressIndicator &&
+            widget.semanticsLabel == 'princess daily progress' &&
+            widget.value == 12 / 18,
+        description: 'princess daily progress with half data value',
+      ),
+      findsOneWidget,
+    );
 
     // During the fasting period, the duration can only be increased, but the start can be changed as will
     await tester.tap(find.byIcon(Icons.create));
     await tester.pump();
     // Check that the slider is displayed
     expect(
-        find.byWidgetPredicate((Widget widget) =>
-            widget is Slider && widget.max == 24 && widget.min == 18),
-        findsOneWidget);
+      find.byWidgetPredicate(
+        (Widget widget) =>
+            widget is Slider && widget.max == 24 && widget.min == 18,
+      ),
+      findsOneWidget,
+    );
     // Update the fasting period
     await tester.tapAt(Offset(center.dx, center.dy));
     await tester.tap(find.text("OK"));
     await tester.pump();
     await tester.tap(find.text("OK"));
     await tester.pump();
-    center = tester
-        .getCenter(find.byKey(const ValueKey<String>('time-picker-dial')));
+    center = tester.getCenter(customPaintFinder);
     await tester.tapAt(Offset(center.dx - 95, center.dy));
     await tester.tap(find.text("OK"));
     expect(u.fastingPeriods.length, 1);
@@ -152,14 +164,15 @@ Future<void> main() async {
     await tester.pump();
     // Check that the CircularProgressIndicator displays correct value
     expect(
-        find.byWidgetPredicate(
-          (Widget widget) =>
-              widget is CircularProgressIndicator &&
-              widget.semanticsLabel == 'princess daily progress' &&
-              widget.value == 9 / 21,
-          description: 'princess daily progress with correct data value',
-        ),
-        findsOneWidget);
+      find.byWidgetPredicate(
+        (Widget widget) =>
+            widget is CircularProgressIndicator &&
+            widget.semanticsLabel == 'princess daily progress' &&
+            widget.value == 9 / 21,
+        description: 'princess daily progress with correct data value',
+      ),
+      findsOneWidget,
+    );
     // Check that we cannot close the period
     expect(find.byIcon(Icons.done), findsNothing);
 
@@ -168,14 +181,15 @@ Future<void> main() async {
     u.notifyListeners();
     await tester.pump();
     expect(
-        find.byWidgetPredicate(
-          (Widget widget) =>
-              widget is CircularProgressIndicator &&
-              widget.semanticsLabel == 'princess daily progress' &&
-              widget.value == 21 / 21,
-          description: 'princess daily progress with full data value',
-        ),
-        findsOneWidget);
+      find.byWidgetPredicate(
+        (Widget widget) =>
+            widget is CircularProgressIndicator &&
+            widget.semanticsLabel == 'princess daily progress' &&
+            widget.value == 21 / 21,
+        description: 'princess daily progress with full data value',
+      ),
+      findsOneWidget,
+    );
 
     // Check that we can now close the period
     expect(find.byIcon(Icons.done), findsOneWidget);
@@ -194,8 +208,7 @@ Future<void> main() async {
     await tester.tap(find.text("28")); // Should have no effect...
     await tester.tap(find.text("OK"));
     await tester.pump();
-    center = tester
-        .getCenter(find.byKey(const ValueKey<String>('time-picker-dial')));
+    center = tester.getCenter(customPaintFinder);
     await tester.tapAt(Offset(center.dx, center.dy + 95));
     await tester.tap(find.text("OK"));
     expect(u.fastingPeriods.length, 2);
@@ -218,8 +231,7 @@ Future<void> main() async {
     await tester.tap(find.text("4"));
     await tester.tap(find.text("OK"));
     await tester.pump();
-    center = tester
-        .getCenter(find.byKey(const ValueKey<String>('time-picker-dial')));
+    center = tester.getCenter(customPaintFinder);
     await tester.tapAt(Offset(center.dx, center.dy + 95));
     await tester.tap(find.text("OK"));
     expect(u.fastingPeriods.length, 3);
@@ -237,8 +249,7 @@ Future<void> main() async {
     await tester.tap(find.text("6"));
     await tester.tap(find.text("OK"));
     await tester.pump();
-    center = tester
-        .getCenter(find.byKey(const ValueKey<String>('time-picker-dial')));
+    center = tester.getCenter(customPaintFinder);
     await tester.tapAt(Offset(center.dx, center.dy + 95));
     await tester.tap(find.text("OK"));
     expect(u.fastingPeriods.length, 3);
