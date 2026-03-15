@@ -19,11 +19,14 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   if (!kIsWeb) {
     Workmanager().initialize(callbackDispatcher);
-    Workmanager().registerPeriodicTask("1", "updateAndManageNotifications",
-        frequency: const Duration(minutes: 15),
-        initialDelay: const Duration(seconds: 5),
-        existingWorkPolicy: ExistingPeriodicWorkPolicy.replace,
-        inputData: {'locale': Platform.localeName.split("_")[0]});
+    Workmanager().registerPeriodicTask(
+      "1",
+      "updateAndManageNotifications",
+      frequency: const Duration(minutes: 15),
+      initialDelay: const Duration(seconds: 5),
+      existingWorkPolicy: ExistingPeriodicWorkPolicy.replace,
+      inputData: {'locale': Platform.localeName.split("_")[0]},
+    );
   }
   await App().init();
   if (App().prefs.remoteStorage) {
@@ -35,12 +38,7 @@ Future<void> main() async {
   }
   u.read();
   //CDateTime.customTime = DateTime(2021, 01, 26, 17, 28);
-  runApp(
-    ChangeNotifierProvider.value(
-      value: u,
-      child: const MyApp(),
-    ),
-  );
+  runApp(ChangeNotifierProvider.value(value: u, child: const MyApp()));
 }
 
 class MyApp extends StatelessWidget {
@@ -52,26 +50,19 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: "Princess Journey",
       theme: ThemeData(
-          colorScheme: ColorScheme.fromSeed(
-            seedColor: Colors.pink,
-          ),
-          appBarTheme: AppBarTheme(
-            backgroundColor: Colors.pink,
-            elevation: 4,
-            shadowColor: Theme.of(context).shadowColor,
-          )),
-      home: const MainPage(
-        title: "Princess Journey",
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.pink),
+        appBarTheme: AppBarTheme(
+          elevation: 2,
+          shadowColor: Theme.of(context).shadowColor,
+        ),
       ),
+      home: const MainPage(title: "Princess Journey"),
       localizationsDelegates: const [
         MyLocalizationsDelegate(),
         ...GlobalMaterialLocalizations.delegates,
         GlobalWidgetsLocalizations.delegate,
       ],
-      supportedLocales: const [
-        Locale('en', ''),
-        Locale('fr', ''),
-      ],
+      supportedLocales: const [Locale('en', ''), Locale('fr', '')],
     );
   }
 }
@@ -105,8 +96,11 @@ class MainPageState extends State<MainPage> with WidgetsBindingObserver {
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
-      _pageController.animateToPage(index,
-          duration: const Duration(milliseconds: 250), curve: Curves.easeOut);
+      _pageController.animateToPage(
+        index,
+        duration: const Duration(milliseconds: 250),
+        curve: Curves.easeOut,
+      );
     });
   }
 
@@ -114,35 +108,33 @@ class MainPageState extends State<MainPage> with WidgetsBindingObserver {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-          //title: Text(widget.title, style: TextStyle(color: Colors.pinkAccent)),
-          title: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Image.asset(
-                'assets/icon/icon.png',
-                fit: BoxFit.contain,
-                height: 32,
-              ),
-              const SizedBox(width: 8),
-              Text(widget.title,
-                  style: const TextStyle(color: Colors.pinkAccent))
-            ],
-          ),
-          backgroundColor: Colors.white,
-          shadowColor: Colors.pink),
+        //title: Text(widget.title, style: TextStyle(color: Colors.pinkAccent)),
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Image.asset(
+              'assets/icon/icon.png',
+              fit: BoxFit.contain,
+              height: 32,
+            ),
+            const SizedBox(width: 8),
+            Text(
+              widget.title,
+              style: const TextStyle(color: Colors.pinkAccent),
+            ),
+          ],
+        ),
+      ),
       body: Padding(
-          padding: const EdgeInsets.all(10),
-          child: PageView(
-            controller: _pageController,
-            onPageChanged: (index) {
-              setState(() => _selectedIndex = index);
-            },
-            children: const <Widget>[
-              Home(),
-              Journey(),
-              You(),
-            ],
-          )),
+        padding: const EdgeInsets.all(10),
+        child: PageView(
+          controller: _pageController,
+          onPageChanged: (index) {
+            setState(() => _selectedIndex = index);
+          },
+          children: const <Widget>[Home(), Journey(), You()],
+        ),
+      ),
       bottomNavigationBar: BottomNavigationBar(
         type: BottomNavigationBarType.fixed,
         items: <BottomNavigationBarItem>[
@@ -182,9 +174,7 @@ class MainPageState extends State<MainPage> with WidgetsBindingObserver {
 void callbackDispatcher() {
   Workmanager().executeTask((task, inputData) async {
     // Update views
-    User user = User(
-      id: 0,
-    );
+    User user = User(id: 0);
     await App().init();
     if (App().prefs.remoteStorage) {
       user.persister = APIPersister(
@@ -197,34 +187,48 @@ void callbackDispatcher() {
     // Send notification when fasting period completed
     if (user.dailyFastingProgress == 1) {
       FlutterLocalNotificationsPlugin flip = FlutterLocalNotificationsPlugin();
-      var android =
-          const AndroidInitializationSettings('@mipmap/notification_icon');
+      var android = const AndroidInitializationSettings(
+        '@mipmap/notification_icon',
+      );
       var ios = const DarwinInitializationSettings();
       var settings = InitializationSettings(android: android, iOS: ios);
-      flip.initialize(settings);
+      flip.initialize(settings: settings);
       _showNotificationWithDefaultSound(
-          flip,
-          MyLocalizations.localizedValue(
-              inputData!["locale"], "fasting_completed"),
-          MyLocalizations.localizedValue(
-              inputData["locale"], "treat_yourself"));
+        flip,
+        MyLocalizations.localizedValue(
+          inputData!["locale"],
+          "fasting_completed",
+        ),
+        MyLocalizations.localizedValue(inputData["locale"], "treat_yourself"),
+      );
     }
     return Future.value(true);
   });
 }
 
 Future _showNotificationWithDefaultSound(
-    FlutterLocalNotificationsPlugin flip, String title, String message) async {
+  FlutterLocalNotificationsPlugin flip,
+  String title,
+  String message,
+) async {
   var androidPlatformChannelSpecifics = const AndroidNotificationDetails(
-      'princess-journey-id', 'princess-journey',
-      channelDescription: 'princess-journey-channel',
-      importance: Importance.max,
-      priority: Priority.high,
-      color: Colors.pink);
+    'princess-journey-id',
+    'princess-journey',
+    channelDescription: 'princess-journey-channel',
+    importance: Importance.max,
+    priority: Priority.high,
+    color: Colors.pink,
+  );
   var iOSPlatformChannelSpecifics = const DarwinNotificationDetails();
   var platformChannelSpecifics = NotificationDetails(
-      android: androidPlatformChannelSpecifics,
-      iOS: iOSPlatformChannelSpecifics);
-  await flip.show(0, title, message, platformChannelSpecifics,
-      payload: 'Default_Sound');
+    android: androidPlatformChannelSpecifics,
+    iOS: iOSPlatformChannelSpecifics,
+  );
+  await flip.show(
+    id: 0,
+    title: title,
+    body: message,
+    notificationDetails: platformChannelSpecifics,
+    payload: 'Default_Sound',
+  );
 }

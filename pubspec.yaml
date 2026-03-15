@@ -31,7 +31,7 @@ dependencies:
   community_charts_flutter: 1.0.4
   flutter:
     sdk: flutter
-  flutter_local_notifications: 19.5.0
+  flutter_local_notifications: 21.0.0
   flutter_localization: 0.3.3
   flutter_localizations:
     sdk: flutter
@@ -39,7 +39,7 @@ dependencies:
   intl: 0.20.2
   path_provider: 2.1.5
   pretty_gauge: 1.0.1
-  provider: 6.1.5
+  provider: ^6.1.5
   shared_preferences: 2.5.4
   # TEMPORARY
   workmanager:

@@ -46,9 +46,14 @@ class MyLocalizations {
       "princess_of_the_palace_details":
           "You've managed to fast for two weeks...",
       "princess_of_the_palace": "The princess of the palace",
+      "princess_of_the_forest_details":
+          "You've managed to fast for three weeks...",
+      "princess_of_the_forest": "The princess of the forest",
       "princess_of_the_path_details":
           "You've managed to fast for four weeks...",
       "princess_of_the_path": "The princess of the path",
+      "princess_of_the_wind_details": "You've managed to fast for one week...",
+      "princess_of_the_wind": "The princess of the wind",
       "remote_storage": "Store data on remote server",
       "remote_user_id": "Remote user ID",
       "select_duration": "Select the fasting duration",
@@ -104,9 +109,15 @@ class MyLocalizations {
       "princess_of_the_palace_details":
           "Vous avez réussi à jeûner deux semaines consécutives...",
       "princess_of_the_palace": "La princesse du palais",
+      "princess_of_the_forest_details":
+          "Vous avez réussi à jeûner trois semaines consécutives...",
+      "princess_of_the_forest": "La princesse de la forêt",
       "princess_of_the_path_details":
           "Vous avez réussi à jeûner quatre semaines consécutives...",
       "princess_of_the_path": "La princesse du chemin",
+      "princess_of_the_wind_details":
+          "Vous avez réussi à jeûner une semaine entière...",
+      "princess_of_the_wind": "La princesse du vent",
       "remote_storage": "Stocker les données sur un serveur distant",
       "remote_user_id": "ID de l'utilisateur distant",
       "select_duration": "Choisissez la durée du jeûne",
