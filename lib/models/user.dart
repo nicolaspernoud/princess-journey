@@ -16,14 +16,15 @@ class User extends ChangeNotifier implements Serialisable {
   late Persister _persister;
   @override
   late int id;
-  User(
-      {required this.id,
-      persister,
-      gender,
-      height,
-      weight,
-      targetWeight,
-      hasTimer = false}) {
+  User({
+    required this.id,
+    persister,
+    gender,
+    height,
+    weight,
+    targetWeight,
+    hasTimer = false,
+  }) {
     _persister = persister ?? FilePersister();
     _gender = gender ?? Gender.male;
     _height = height ?? 0;
@@ -156,7 +157,8 @@ class User extends ChangeNotifier implements Serialisable {
     }
     final heightM = _height / 100;
     return double.parse(
-        ((_weights.last.value / (heightM * heightM))).toStringAsFixed(2));
+      ((_weights.last.value / (heightM * heightM))).toStringAsFixed(2),
+    );
   }
 
   // Target Weight
@@ -293,9 +295,9 @@ class User extends ChangeNotifier implements Serialisable {
     }
     double result =
         CDateTime.now().difference(activeFastingPeriod!.start).inSeconds /
-            activeFastingPeriod!.end
-                .difference(activeFastingPeriod!.start)
-                .inSeconds;
+        activeFastingPeriod!.end
+            .difference(activeFastingPeriod!.start)
+            .inSeconds;
     return result > 1 ? 1 : result;
   }
 
@@ -306,8 +308,7 @@ class User extends ChangeNotifier implements Serialisable {
     }
     int v = (_fastingPeriods.last.closed) ? 1 : 0;
     for (var i = _fastingPeriods.length - 1; i > 0; i--) {
-      if (_fastingPeriods[i]
-              .start
+      if (_fastingPeriods[i].start
               .difference(_fastingPeriods[i - 1].start)
               .inHours <=
           24) {
@@ -323,8 +324,7 @@ class User extends ChangeNotifier implements Serialisable {
     int l = (_fastingPeriods.isNotEmpty && _fastingPeriods.last.closed) ? 1 : 0;
     int v = l;
     for (var i = _fastingPeriods.length - 1; i > 0; i--) {
-      if (_fastingPeriods[i]
-              .start
+      if (_fastingPeriods[i].start
               .difference(_fastingPeriods[i - 1].start)
               .inHours <=
           24) {
@@ -342,8 +342,9 @@ class User extends ChangeNotifier implements Serialisable {
     id = map['id'];
     _gender = map['_gender'] == 1 ? Gender.male : Gender.female;
     _height = map['_height'];
-    _weights =
-        (map['_weights'] as List).map((e) => Weight.fromJson(e)).toList();
+    _weights = (map['_weights'] as List)
+        .map((e) => Weight.fromJson(e))
+        .toList();
     _targetWeight = map['_targetWeight'];
     _dailyWaterTarget = map['_dailyWaterTarget'];
     _waterIntakes = (map['_waterIntakes'] as List)
@@ -364,7 +365,7 @@ class User extends ChangeNotifier implements Serialisable {
       '_targetWeight': _targetWeight,
       '_dailyWaterTarget': _dailyWaterTarget,
       '_waterIntakes': _waterIntakes,
-      '_fastingPeriods': _fastingPeriods
+      '_fastingPeriods': _fastingPeriods,
     };
   }
 }
@@ -397,17 +398,17 @@ class Measurement extends Serialisable {
 
   @override
   Map<String, dynamic> toJson() => {
-        'id': id,
-        'user_id': userId,
-        'date': date.toIso8601String(),
-        'value': value,
-      };
+    'id': id,
+    'user_id': userId,
+    'date': date.toIso8601String(),
+    'value': value,
+  };
 
   Measurement.fromJson(Map<String, dynamic> json)
-      : id = json['id'],
-        userId = json['user_id'],
-        date = DateTime.parse(json['date']),
-        value = json['value'];
+    : id = json['id'],
+      userId = json['user_id'],
+      date = DateTime.parse(json['date']),
+      value = json['value'];
 }
 
 class Weight extends Measurement {
@@ -440,7 +441,8 @@ class FastingPeriod extends Serialisable {
       _closed = true;
     } else {
       throw FastingPeriodNotEndedException(
-          "cannot close an active fasting period");
+        "cannot close an active fasting period",
+      );
     }
   }
 
@@ -452,19 +454,19 @@ class FastingPeriod extends Serialisable {
 
   @override
   Map<String, dynamic> toJson() => {
-        'id': id,
-        'user_id': userId,
-        'start': start.toIso8601String(),
-        'duration': duration,
-        'closed': _closed
-      };
+    'id': id,
+    'user_id': userId,
+    'start': start.toIso8601String(),
+    'duration': duration,
+    'closed': _closed,
+  };
 
   FastingPeriod.fromJson(Map<String, dynamic> json)
-      : id = json['id'],
-        userId = json['user_id'],
-        start = DateTime.parse(json['start']),
-        duration = json['duration'],
-        _closed = json['closed'];
+    : id = json['id'],
+      userId = json['user_id'],
+      start = DateTime.parse(json['start']),
+      duration = json['duration'],
+      _closed = json['closed'];
 }
 
 class FastingPeriodNotEndedException implements Exception {
@@ -486,7 +488,7 @@ abstract class Persister {
 
 class FilePersister extends Persister {
   final String _fileName;
-  FilePersister({String fileName = "user.json"}) : _fileName = fileName;
+  FilePersister({this._fileName = "user.json"});
 
   Future<File> getLocalFile() async {
     if (Platform.isAndroid) {
@@ -525,11 +527,11 @@ class APIPersister extends Persister {
   final String _base;
   final String _token;
   final int _targetId;
-  APIPersister(
-      {required String base, required String token, required int targetId})
-      : _base = base,
-        _token = token,
-        _targetId = targetId;
+  APIPersister({
+    required this._base,
+    required this._token,
+    required this._targetId,
+  });
 
   String get base => _base;
   String get token => _token;
@@ -546,7 +548,7 @@ class APIPersister extends Persister {
         Uri.parse(route),
         headers: <String, String>{
           'Authorization': "Bearer $token",
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
         },
       );
       if (response.statusCode == 200) {
@@ -583,7 +585,7 @@ class APIPersister extends Persister {
     Response response;
     var headers = <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
-      'Authorization': "Bearer $token"
+      'Authorization': "Bearer $token",
     };
     try {
       if (child != null) {
