@@ -46,3 +46,6 @@ app.*.map.json
 key.jks
 user_test.json
 user.json
+
+# Widget Preview related
+.widget_preview/
